@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class BotStartup {
     public static void main(String[] args) throws LoginException {
-        File file = new File("E:\\Coding\\JennyChan\\.env");
+        File file = new File("E:\\Dev\\JennyChan\\.env");
         Scanner token = null;
         try {
             token = new Scanner(file);
