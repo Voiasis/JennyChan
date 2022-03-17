@@ -6,6 +6,7 @@ What it can do so far:
 - Reply to mention
 - List commands
 - Show bot uptime 
+- Server info
 - Show users avatar
 - Add reaction to message
 - Say command
