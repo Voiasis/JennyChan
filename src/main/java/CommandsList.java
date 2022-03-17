@@ -19,7 +19,6 @@ public class CommandsList extends ListenerAdapter {
             embed.setTitle("Commands. Page 1 of 2.", null);
             embed.setDescription("");
             
-            embed.addField(prefix + "commands", "Shows this message.", false);
             embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
             embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
             embed.addField(prefix + "say <some text>", "Sends text.", false);
