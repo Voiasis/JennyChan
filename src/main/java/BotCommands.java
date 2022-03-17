@@ -18,22 +18,22 @@ public class BotCommands extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         String[] args = event.getMessage().getContentRaw().split(" ");
+        RuntimeMXBean rb = ManagementFactory.getRuntimeMXBean();
         EmbedBuilder embed = new EmbedBuilder();
         embed.setColor(Color.MAGENTA);
+        embed.setFooter(ftr, avURL);
 
         //uptime start TODO add days. show days, hours, minutes, seconds, millis as separate embed fields
         if (args[0].equalsIgnoreCase(prefix + "uptime")) {
-            RuntimeMXBean rb = ManagementFactory.getRuntimeMXBean();
             long ut = rb.getUptime();
             long millis = ut % 1000;
             long second = (ut / 1000) % 60;
             long minute = (ut / (1000 * 60)) % 60;
             long hour = (ut / (1000 * 60 * 60)) % 24;
             String uptime = String.format("%02d:%02d:%02d.%d", hour, minute, second, millis);
-
             embed.setTitle("JennyChan's Uptime", null);
             embed.setDescription("" + uptime);
-            embed.setFooter(ftr, avURL);
+            
             event.getChannel().sendMessageEmbeds(embed.build()).queue();
             embed.clear();
         }
@@ -47,7 +47,6 @@ public class BotCommands extends ListenerAdapter {
             embed.setDescription("");
             embed.addField("Ping:", "...." + "ms", false);
             embed.addField("Websocket:", gwp + "ms", false);
-            embed.setFooter(ftr, avURL);
             event.getChannel().sendMessageEmbeds(embed.build()).queue();
             embed.clear();
 
@@ -63,6 +62,48 @@ public class BotCommands extends ListenerAdapter {
         }
         //ping end
 
+        //about start TODO finish this
+        if (args[0].equalsIgnoreCase(prefix + "about")) {
+            //about the bot
+        }
+
+        //about end
+
+        //serverinfo start TODO finish this
+        if (args[0].equalsIgnoreCase(prefix + "serverinfo")) {
+            String members = Integer.toString(event.getGuild().getMemberCount());
+            String month = Integer.toString(event.getGuild().getTimeCreated().getMonthValue());
+            String day = Integer.toString(event.getGuild().getTimeCreated().getDayOfMonth());
+            String year = Integer.toString(event.getGuild().getTimeCreated().getYear());
+            String creation = month + "/" + day + "/" + year;
+            String owner = event.getGuild().getOwner().getAsMention();
+            String boosts = Integer.toString(event.getGuild().getBoostCount());
+
+            embed.setTitle(event.getGuild().getName(), null);
+            //embed.addField("Description", event.getGuild().getDescription(), false);
+            embed.addField("Owner", owner, false);
+            embed.addField("Created", creation, false);
+            embed.addField("Default Channel", "<#" + event.getGuild().getDefaultChannel().getId() + ">", false);
+            //embed.addField("Online Members", event.getGuild().getMemberCount(), false);
+            embed.addField("Total Members", members, false);
+            //embed.addField("Channels (text)", event.getGuild(), false);
+            //embed.addField("Channels (voice)", event.getGuild(), false);
+            //embed.addField("Roles", event.getGuild(), false);
+            //embed.addField("Emojis", event.getGuild(), false);
+            //embed.addField("Voice Region", event.getGuild(), false);
+            //embed.addField("Ban Count", event.getGuild(), false);
+            embed.addField("Boosts", boosts, false);
+            embed.addField("Server ID", event.getGuild().getId(), false);
+
+            embed.addField("Banner", "", false);
+            embed.setImage(event.getGuild().getBannerUrl());
+
+            event.getChannel().sendMessageEmbeds(embed.build()).queue();
+            embed.clear();
+        }
+
+        //serverinfo end
+
         //avatar start
         if (args[0].equalsIgnoreCase(prefix + "avatar")) {
             if(event.getMessage().getMentionedUsers().toArray().length == 1) {
@@ -70,7 +111,6 @@ public class BotCommands extends ListenerAdapter {
                 embed.setTitle("Link", member.getUser().getAvatarUrl() + "?size=1024");
                 embed.setDescription("Avatar of " + member.getUser().getAsMention() + ".");
                 embed.setImage(member.getUser().getAvatarUrl() + "?size=1024");
-                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
                 
@@ -78,7 +118,6 @@ public class BotCommands extends ListenerAdapter {
                 embed.setTitle("Link", event.getAuthor().getAvatarUrl() + "?size=1024");
                 embed.setDescription("Avatar of " + event.getAuthor().getAsMention() + ".");
                 embed.setImage(event.getAuthor().getAvatarUrl() + "?size=1024");
-                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -93,7 +132,6 @@ public class BotCommands extends ListenerAdapter {
             } else {
                 embed.setTitle(prefix + "say <some text>", null);
                 embed.setDescription("Sends inputted text.");
-                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -111,7 +149,6 @@ public class BotCommands extends ListenerAdapter {
             } else {
                 embed.setTitle(prefix + "react <emoji>", null);
                 embed.setDescription("Adds reaction to replied message.");
-                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -127,7 +164,6 @@ public class BotCommands extends ListenerAdapter {
             } else {
                 embed.setTitle(prefix + "reply <some text>", null);
                 embed.setDescription("Replies to replied message.");
-                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -155,7 +191,6 @@ public class BotCommands extends ListenerAdapter {
             } else {
                 embed.setTitle(prefix + "delete", null);
                 embed.setDescription("Deletes message you reply to.");
-                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -173,7 +208,6 @@ public class BotCommands extends ListenerAdapter {
                 } else {
                     embed.setTitle(prefix + "message <@user> <some text>", null);
                     embed.setDescription("Sends user a message.");
-                    embed.setFooter(ftr, avURL);
                     event.getChannel().sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
@@ -181,7 +215,6 @@ public class BotCommands extends ListenerAdapter {
             } else {
                 embed.setTitle(prefix + "message <@user> <some text>", null);
                 embed.setDescription("Sends user a message.");
-                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -200,14 +233,12 @@ public class BotCommands extends ListenerAdapter {
                 } else {
                     embed.setTitle(prefix + "giverole <@role> <@user>", null);
                     embed.setDescription("Gives a user a role.");
-                    embed.setFooter(ftr, avURL);
                     event.getChannel().sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
             } else {
                 embed.setTitle(prefix + "giverole <@role> <@user>", null);
                 embed.setDescription("Gives a user a role.");
-                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -226,19 +257,25 @@ public class BotCommands extends ListenerAdapter {
                 } else {
                     embed.setTitle(prefix + "removerole <@role> <@user>", null);
                     embed.setDescription("Removes a role from a user.");
-                    embed.setFooter(ftr, avURL);
                     event.getChannel().sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
             } else {
                 embed.setTitle(prefix + "removerole <@role> <@user>", null);
                 embed.setDescription("Removes a role from a user.");
-                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         }
         //removerole end
+
+        //mute start TODO finish this
+        if (args[0].equalsIgnoreCase(prefix + "mute")) {
+            //
+        }
+
+
+        //mute end
 
         //kick start TODO check for kick permission of command user
         if (args[0].equalsIgnoreCase(prefix + "kick")) {
@@ -272,9 +309,15 @@ public class BotCommands extends ListenerAdapter {
         }
         //kick end
 
+        //soft ban start TODO finish this
+        if (args[0].equalsIgnoreCase(prefix + "softban")) {
+            //
+        }
+        //softban end
+
         //ban start TODO finish this
         if (args[0].equalsIgnoreCase(prefix + "ban")) {
-            
+            //
         }
         //ban end
 
