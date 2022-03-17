@@ -5,7 +5,9 @@ What it can do so far:
 - Reply to mention
 - List commands
 - Show bot uptime 
+- Show users avatar
 - Say command
+- Reply to messages
 - Edit messages the bot has sent
 - Delete messages
 - Send text to choosen users DMs
