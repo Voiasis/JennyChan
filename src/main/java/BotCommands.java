@@ -1,8 +1,10 @@
 import java.awt.Color;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -10,41 +12,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class BotCommands extends ListenerAdapter {
     public String prefix = "!"; //bot prefix
     public String botID = "<@!952761165577060453>"; //bot mention ID
+    public String ftr = "Bot created by Voiasis#0001";
+    public String avURL = "https://cdn.discordapp.com/avatars/472899069136601099/a_a4016f032af0656365c32677b5efe43e.gif";
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         String[] args = event.getMessage().getContentRaw().split(" ");
-
-        //mention reply start TODO mention can be used as prefix (with a space ofc)
-        if (args[0].equalsIgnoreCase(botID)) {
-            event.getMessage().reply("Hey cutie~ ;3" + "\r\n" + "Say \"" + prefix + "commands\" to get started!").queue();
-        }
-        //mention reply end
-
-        //commands start
-        if (args[0].equalsIgnoreCase(prefix + "commands")) {
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.setColor(Color.MAGENTA);
-            embed.setTitle("Commands", null);
-            embed.setDescription("List of all bot commands.");
-            
-            embed.addField(prefix + "commands", "Shows this message.", false);
-            embed.addField(prefix + "uptime", "Shows the bots current uptime.", false);
-            embed.addField(prefix + "ping", "Shows message response time.", false);
-            embed.addField(prefix + "say <some text>", "Sends inputted text and deletes command message.", false);
-            embed.addField(prefix + "edit <some text>", "Edits bot message you reply to and deletes command message.", false);
-            embed.addField(prefix + "delete", "Deletes message you replied to and deletes command message.", false);
-            embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
-            embed.addField(prefix + "giverole <@role> <@user>", "Gives a user a role.", false);
-            embed.addField(prefix + "removerole <@role> <@user>", "Removes a role from a user.", false);
-            embed.addField(prefix + "kick <@member> [<reason>]", "Kicks a member. Reason is optional.", false);
-            embed.addField(prefix + "shutdown", "Shuts down bot.", false);
-
-            embed.setFooter("Bot created by Voiasis#0001", null);
-            event.getChannel().sendMessageEmbeds(embed.build()).queue();
-            embed.clear();
-        }
-        //commands end
 
         //uptime start TODO add days. show days, hours, minutes, seconds, millis as separate embed fields
         if (args[0].equalsIgnoreCase(prefix + "uptime")) {
@@ -60,7 +33,7 @@ public class BotCommands extends ListenerAdapter {
             embed.setColor(Color.MAGENTA);
             embed.setTitle("JennyChan's Uptime", null);
             embed.setDescription("" + uptime);
-            embed.setFooter("Bot created by Voiasis#0001", null);
+            embed.setFooter(ftr, avURL);
             event.getChannel().sendMessageEmbeds(embed.build()).queue();
             embed.clear();
         }
@@ -76,7 +49,7 @@ public class BotCommands extends ListenerAdapter {
             embed.setDescription("");
             embed.addField("Ping:", "...." + "ms", false);
             embed.addField("Websocket:", gwp + "ms", false);
-            embed.setFooter("Bot created by Voiasis#0001", null);
+            embed.setFooter(ftr, avURL);
             event.getChannel().sendMessageEmbeds(embed.build()).queue();
             embed.clear();
 
@@ -92,6 +65,32 @@ public class BotCommands extends ListenerAdapter {
         }
         //ping end
 
+        //avatar start
+        if (args[0].equalsIgnoreCase(prefix + "avatar")) {
+            if(event.getMessage().getMentionedUsers().toArray().length == 1) {
+                Member member = event.getMessage().getMentionedMembers().get(0);
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.setColor(Color.MAGENTA);
+                embed.setTitle("Link", member.getUser().getAvatarUrl() + "?size=1024");
+                embed.setDescription("Avatar of " + member.getUser().getAsMention() + ".");
+                embed.setImage(member.getUser().getAvatarUrl() + "?size=1024");
+                embed.setFooter(ftr, avURL);
+                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                embed.clear();
+                
+            } else {
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.setColor(Color.MAGENTA);
+                embed.setTitle("Link", event.getAuthor().getAvatarUrl() + "?size=1024");
+                embed.setDescription("Avatar of " + event.getAuthor().getAsMention() + ".");
+                embed.setImage(event.getAuthor().getAvatarUrl() + "?size=1024");
+                embed.setFooter(ftr, avURL);
+                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                embed.clear();
+            }
+        }
+        //avatar end
+
         //say start TODO check for manage messages permission of command user
         if (args[0].equalsIgnoreCase(prefix + "say")) {
             if (event.getMessage().getContentRaw().toCharArray().length >= 5) {
@@ -102,12 +101,30 @@ public class BotCommands extends ListenerAdapter {
                 embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "say <some text>", null);
                 embed.setDescription("Sends inputted text.");
-                embed.setFooter("Bot created by Voiasis#0001", null);
+                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         }
         //say end
+
+        //reply
+        if (args[0].equalsIgnoreCase(prefix + "reply")) {
+            if (event.getMessage().getContentRaw().toCharArray().length >= 7) {
+                Message msg = event.getMessage().getMessageReference().getMessage();
+                msg.reply(event.getMessage().getContentRaw().substring(7)).queue();
+                event.getMessage().delete().queue();
+            } else {
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.setColor(Color.MAGENTA);
+                embed.setTitle(prefix + "reply <some text>", null);
+                embed.setDescription("Replies to replied message.");
+                embed.setFooter(ftr, avURL);
+                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                embed.clear();
+            }
+        }
+        //reply
 
         //edit start TODO fix errors when no text is inputted and when replying to wrong message and check for manage messages permission of command user
         if (args[0].equalsIgnoreCase(prefix + "edit")) {
@@ -132,7 +149,7 @@ public class BotCommands extends ListenerAdapter {
                 embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "delete", null);
                 embed.setDescription("Deletes message you reply to.");
-                embed.setFooter("Bot created by Voiasis#0001", null);
+                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -152,7 +169,7 @@ public class BotCommands extends ListenerAdapter {
                     embed.setColor(Color.MAGENTA);
                     embed.setTitle(prefix + "message <@user> <some text>", null);
                     embed.setDescription("Sends user a message.");
-                    embed.setFooter("Bot created by Voiasis#0001", null);
+                    embed.setFooter(ftr, avURL);
                     event.getChannel().sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
@@ -162,7 +179,7 @@ public class BotCommands extends ListenerAdapter {
                 embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "message <@user> <some text>", null);
                 embed.setDescription("Sends user a message.");
-                embed.setFooter("Bot created by Voiasis#0001", null);
+                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -183,7 +200,7 @@ public class BotCommands extends ListenerAdapter {
                     embed.setColor(Color.MAGENTA);
                     embed.setTitle(prefix + "giverole <@role> <@user>", null);
                     embed.setDescription("Gives a user a role.");
-                    embed.setFooter("Bot created by Voiasis#0001", null);
+                    embed.setFooter(ftr, avURL);
                     event.getChannel().sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
@@ -192,7 +209,7 @@ public class BotCommands extends ListenerAdapter {
                 embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "giverole <@role> <@user>", null);
                 embed.setDescription("Gives a user a role.");
-                embed.setFooter("Bot created by Voiasis#0001", null);
+                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -213,7 +230,7 @@ public class BotCommands extends ListenerAdapter {
                     embed.setColor(Color.MAGENTA);
                     embed.setTitle(prefix + "removerole <@role> <@user>", null);
                     embed.setDescription("Removes a role from a user.");
-                    embed.setFooter("Bot created by Voiasis#0001", null);
+                    embed.setFooter(ftr, avURL);
                     event.getChannel().sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
@@ -222,7 +239,7 @@ public class BotCommands extends ListenerAdapter {
                 embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "removerole <@role> <@user>", null);
                 embed.setDescription("Removes a role from a user.");
-                embed.setFooter("Bot created by Voiasis#0001", null);
+                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -241,7 +258,7 @@ public class BotCommands extends ListenerAdapter {
                     embed.setColor(Color.MAGENTA);
                     embed.setTitle("User kicked", null);
                     embed.setDescription(member.getAsMention() + " has been kicked with reason \"" + reason +"\".");
-                    embed.setFooter("Bot created by Voiasis#0001", null);
+                    embed.setFooter(ftr, avURL);
                     event.getChannel().sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 } else {
@@ -251,7 +268,7 @@ public class BotCommands extends ListenerAdapter {
                     embed.setColor(Color.MAGENTA);
                     embed.setTitle("User kicked", null);
                     embed.setDescription(member.getAsMention() + " has been kicked.");
-                    embed.setFooter("Bot created by Voiasis#0001", null);
+                    embed.setFooter(ftr, avURL);
                     event.getChannel().sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
@@ -260,7 +277,7 @@ public class BotCommands extends ListenerAdapter {
                 embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "kick <@member>", null);
                 embed.setDescription("Kicks a member.");
-                embed.setFooter("Bot created by Voiasis#0001", null);
+                embed.setFooter(ftr, avURL);
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -269,7 +286,7 @@ public class BotCommands extends ListenerAdapter {
 
         //ban start TODO finish this
         if (args[0].equalsIgnoreCase(prefix + "ban")) {
-            //
+            
         }
         //ban end
 

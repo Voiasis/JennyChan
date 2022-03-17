@@ -22,7 +22,7 @@ public class BotStartup {
         JDABuilder jda = JDABuilder.createDefault(token.next());
         jda.setStatus(OnlineStatus.ONLINE);
         jda.setActivity(Activity.watching("hentai"));
-        jda.addEventListeners(new BotCommands());
+        jda.addEventListeners(new BotCommands(), new CommandsList(), new MentionCommands());
         jda.setChunkingFilter(ChunkingFilter.ALL);
         jda.setMemberCachePolicy(MemberCachePolicy.ALL);
         jda.enableIntents(GatewayIntent.GUILD_MEMBERS);
