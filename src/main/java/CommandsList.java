@@ -21,6 +21,7 @@ public class CommandsList extends ListenerAdapter {
             
             embed.addField(prefix + "commands", "Shows this message.", false);
             embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
+            embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
             embed.addField(prefix + "say <some text>", "Sends text.", false);
             embed.addField(prefix + "reply <some text>", "Replys to replied message.", false);
             embed.addField(prefix + "edit <some text>", "Edits bot message you reply to.", false);
@@ -43,6 +44,8 @@ public class CommandsList extends ListenerAdapter {
             embed.addField(prefix + "uptime", "Shows the bots uptime.", false);
             embed.addField(prefix + "ping", "Shows message response time.", false);
             embed.addField(prefix + "shutdown", "Shuts down bot.", false);
+            embed.addField(prefix + "commands", "Lists page 1 of commands.", false);
+            embed.addField(prefix + "commands2", "Lists page 2 of commands.", false);
 
             embed.addField("","Use \"" + prefix + "commands\" to go to page 1.", false);
             embed.setFooter(ftr, avURL);

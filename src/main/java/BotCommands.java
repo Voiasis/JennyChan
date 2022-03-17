@@ -100,6 +100,24 @@ public class BotCommands extends ListenerAdapter {
         }
         //say end
 
+        //react start TODO add react to replied message
+        if (args[0].equalsIgnoreCase(prefix + "react")) {
+            if (event.getMessage().getContentRaw().toCharArray().length >= 7) {
+                String emoji1 = event.getMessage().getContentRaw().substring(9);
+                String emoji2 = emoji1.replaceFirst(">","");
+                Message msg = event.getMessage().getMessageReference().getMessage();
+                msg.addReaction(emoji2).queue();
+                event.getMessage().delete().queue();
+            } else {
+                embed.setTitle(prefix + "react <emoji>", null);
+                embed.setDescription("Adds reaction to replied message.");
+                embed.setFooter(ftr, avURL);
+                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                embed.clear();
+            }
+        }
+        //react end
+
         //reply
         if (args[0].equalsIgnoreCase(prefix + "reply")) {
             if (event.getMessage().getContentRaw().toCharArray().length >= 7) {
