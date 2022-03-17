@@ -6,6 +6,7 @@ What it can do so far:
 - List commands
 - Show bot uptime 
 - Show users avatar
+- Add reaction to message
 - Say command
 - Reply to messages
 - Edit messages the bot has sent
@@ -16,3 +17,5 @@ What it can do so far:
 - Kick members with optional reason
 
 More to come.
+
+[Commands](COMMANDS.md)
