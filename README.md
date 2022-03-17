@@ -28,8 +28,4 @@ Ideas for future:
 - Auto open threads in #suggetions for my server
 
 
-<<<<<<< HEAD
 # [Commands list](COMMANDS.md)
-=======
-# [Commands list](COMMANDS.md)
->>>>>>> 49ac0b190eaa00954fcc0f7548208f7a1b603170
