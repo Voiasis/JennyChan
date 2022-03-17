@@ -1,62 +1,62 @@
 # List of Commands
 
 
-- !avatar [<@user>]
+!avatar [<@user>]
 
-Shows avatar of user.
+- Shows avatar of user.
 
-- !react <emoji>
+!react <emoji>
   
-Adds reaction to replied message.
+- Adds reaction to replied message.
 
-- !say <some text>
+!say <some text>
   
-Sends text.
+- Sends text.
 
-- !reply <some text>
+!reply <some text>
   
-Replys to replied message.
+- Replys to replied message.
 
-- !edit <some text>
+!edit <some text>
   
-Edits bot message you reply to.
+- Edits bot message you reply to.
 
-- !delete
+!delete
   
-Deletes message you replied to.
+- Deletes message you replied to.
 
-- !message <@user> <some text>
+!message <@user> <some text>
   
-Sends user a message.
+- Sends user a message.
 
-- !giverole <@role> <@user>
+!giverole <@role> <@user>
   
-Gives a user a role.
+- Gives a user a role.
 
-- !removerole <@role> <@user>
+!removerole <@role> <@user>
   
-Removes a role from a user.
+- Removes a role from a user.
 
-- !kick <@user> [<reason>]
+!kick <@user> [<reason>]
   
-Kicks a user. Reason is optional.
+- Kicks a user. Reason is optional.
 
-- !uptime
+!uptime
   
-Shows the bots uptime.
+- Shows the bots uptime.
 
-- !ping
+!ping
   
-Shows message response time.
+- Shows message response time.
 
-- !shutdown
+!shutdown
   
-Shuts down bot.
+- Shuts down bot.
 
-- !commands
+!commands
   
-Lists page 1 of commands.
+- Lists page 1 of commands.
 
-- !commands2
+!commands2
   
-Lists page 2 of commands.
+- Lists page 2 of commands.
