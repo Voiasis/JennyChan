@@ -1,12 +1,8 @@
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class CommandsList extends ListenerAdapter {
     public String prefix = "!"; //bot prefix
@@ -20,12 +16,10 @@ public class CommandsList extends ListenerAdapter {
             embed.setColor(Color.MAGENTA);
 
         if (args[0].equalsIgnoreCase(prefix + "commands")) {
-            embed.setTitle("Commands", null);
-            embed.setDescription("List of all bot commands.");
+            embed.setTitle("Commands. Page 1 of 2.", null);
+            embed.setDescription("");
             
             embed.addField(prefix + "commands", "Shows this message.", false);
-            embed.addField(prefix + "uptime", "Shows the bots uptime.", false);
-            embed.addField(prefix + "ping", "Shows message response time.", false);
             embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
             embed.addField(prefix + "say <some text>", "Sends text.", false);
             embed.addField(prefix + "reply <some text>", "Replys to replied message.", false);
@@ -35,11 +29,26 @@ public class CommandsList extends ListenerAdapter {
             embed.addField(prefix + "giverole <@role> <@user>", "Gives a user a role.", false);
             embed.addField(prefix + "removerole <@role> <@user>", "Removes a role from a user.", false);
             embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user. Reason is optional.", false);
-            embed.addField(prefix + "shutdown", "Shuts down bot.", false);
 
+            embed.addField("","Use \"" + prefix + "commands2\" to go to page 2.", false);
             embed.setFooter(ftr, avURL);
             event.getChannel().sendMessageEmbeds(embed.build()).queue();
             embed.clear();
-        } //TODO add page system
+        } 
+
+        if (args[0].equalsIgnoreCase(prefix + "commands2")) {
+            embed.setTitle("Commands. Page 2 of 2", null);
+            embed.setDescription("");
+
+            embed.addField(prefix + "uptime", "Shows the bots uptime.", false);
+            embed.addField(prefix + "ping", "Shows message response time.", false);
+            embed.addField(prefix + "shutdown", "Shuts down bot.", false);
+
+            embed.addField("","Use \"" + prefix + "commands\" to go to page 1.", false);
+            embed.setFooter(ftr, avURL);
+            event.getChannel().sendMessageEmbeds(embed.build()).queue();
+            embed.clear();
+        } 
     }
 }
+//TODO add emoji page system thing
