@@ -18,6 +18,8 @@ public class BotCommands extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         String[] args = event.getMessage().getContentRaw().split(" ");
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setColor(Color.MAGENTA);
 
         //uptime start TODO add days. show days, hours, minutes, seconds, millis as separate embed fields
         if (args[0].equalsIgnoreCase(prefix + "uptime")) {
@@ -29,8 +31,6 @@ public class BotCommands extends ListenerAdapter {
             long hour = (ut / (1000 * 60 * 60)) % 24;
             String uptime = String.format("%02d:%02d:%02d.%d", hour, minute, second, millis);
 
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.setColor(Color.MAGENTA);
             embed.setTitle("JennyChan's Uptime", null);
             embed.setDescription("" + uptime);
             embed.setFooter(ftr, avURL);
@@ -43,8 +43,6 @@ public class BotCommands extends ListenerAdapter {
         if (args[0].equalsIgnoreCase(prefix + "ping")) {
             long gw = event.getJDA().getGatewayPing();
             String gwp = Long.toString(gw);
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.setColor(Color.MAGENTA);
             embed.setTitle("Pong!", null);
             embed.setDescription("");
             embed.addField("Ping:", "...." + "ms", false);
@@ -69,8 +67,6 @@ public class BotCommands extends ListenerAdapter {
         if (args[0].equalsIgnoreCase(prefix + "avatar")) {
             if(event.getMessage().getMentionedUsers().toArray().length == 1) {
                 Member member = event.getMessage().getMentionedMembers().get(0);
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setColor(Color.MAGENTA);
                 embed.setTitle("Link", member.getUser().getAvatarUrl() + "?size=1024");
                 embed.setDescription("Avatar of " + member.getUser().getAsMention() + ".");
                 embed.setImage(member.getUser().getAvatarUrl() + "?size=1024");
@@ -79,8 +75,6 @@ public class BotCommands extends ListenerAdapter {
                 embed.clear();
                 
             } else {
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setColor(Color.MAGENTA);
                 embed.setTitle("Link", event.getAuthor().getAvatarUrl() + "?size=1024");
                 embed.setDescription("Avatar of " + event.getAuthor().getAsMention() + ".");
                 embed.setImage(event.getAuthor().getAvatarUrl() + "?size=1024");
@@ -97,8 +91,6 @@ public class BotCommands extends ListenerAdapter {
                 event.getChannel().sendMessage(event.getMessage().getContentRaw().substring(5)).queue();
                 event.getMessage().delete().queue();
             } else {
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "say <some text>", null);
                 embed.setDescription("Sends inputted text.");
                 embed.setFooter(ftr, avURL);
@@ -115,8 +107,6 @@ public class BotCommands extends ListenerAdapter {
                 msg.reply(event.getMessage().getContentRaw().substring(7)).queue();
                 event.getMessage().delete().queue();
             } else {
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "reply <some text>", null);
                 embed.setDescription("Replies to replied message.");
                 embed.setFooter(ftr, avURL);
@@ -145,8 +135,6 @@ public class BotCommands extends ListenerAdapter {
                 event.getChannel().deleteMessageById(event.getMessage().getMessageReference().getMessageId()).queue();
                 event.getMessage().delete().queue();
             } else {
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "delete", null);
                 embed.setDescription("Deletes message you reply to.");
                 embed.setFooter(ftr, avURL);
@@ -165,8 +153,6 @@ public class BotCommands extends ListenerAdapter {
                     member.getUser().openPrivateChannel().flatMap(channel -> channel.sendMessage(msg)).queue();
                     
                 } else {
-                    EmbedBuilder embed = new EmbedBuilder();
-                    embed.setColor(Color.MAGENTA);
                     embed.setTitle(prefix + "message <@user> <some text>", null);
                     embed.setDescription("Sends user a message.");
                     embed.setFooter(ftr, avURL);
@@ -175,8 +161,6 @@ public class BotCommands extends ListenerAdapter {
                 }
                 
             } else {
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "message <@user> <some text>", null);
                 embed.setDescription("Sends user a message.");
                 embed.setFooter(ftr, avURL);
@@ -196,8 +180,6 @@ public class BotCommands extends ListenerAdapter {
 
                     event.getMessage().reply("Gave the role " + roleToGive.getAsMention() + " to " + member.getAsMention() + ".").queue();
                 } else {
-                    EmbedBuilder embed = new EmbedBuilder();
-                    embed.setColor(Color.MAGENTA);
                     embed.setTitle(prefix + "giverole <@role> <@user>", null);
                     embed.setDescription("Gives a user a role.");
                     embed.setFooter(ftr, avURL);
@@ -205,8 +187,6 @@ public class BotCommands extends ListenerAdapter {
                     embed.clear();
                 }
             } else {
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "giverole <@role> <@user>", null);
                 embed.setDescription("Gives a user a role.");
                 embed.setFooter(ftr, avURL);
@@ -226,8 +206,6 @@ public class BotCommands extends ListenerAdapter {
 
                     event.getMessage().reply("Removed the role " + roleToRemove.getAsMention() + " from " + member.getAsMention() + '.').queue();
                 } else {
-                    EmbedBuilder embed = new EmbedBuilder();
-                    embed.setColor(Color.MAGENTA);
                     embed.setTitle(prefix + "removerole <@role> <@user>", null);
                     embed.setDescription("Removes a role from a user.");
                     embed.setFooter(ftr, avURL);
@@ -235,8 +213,6 @@ public class BotCommands extends ListenerAdapter {
                     embed.clear();
                 }
             } else {
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "removerole <@role> <@user>", null);
                 embed.setDescription("Removes a role from a user.");
                 embed.setFooter(ftr, avURL);
@@ -254,8 +230,6 @@ public class BotCommands extends ListenerAdapter {
                     Member member = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
                     String reason = event.getMessage().getContentRaw().substring(29);
                     event.getGuild().kick(member, reason).queue();
-                    EmbedBuilder embed = new EmbedBuilder();
-                    embed.setColor(Color.MAGENTA);
                     embed.setTitle("User kicked", null);
                     embed.setDescription(member.getAsMention() + " has been kicked with reason \"" + reason +"\".");
                     embed.setFooter(ftr, avURL);
@@ -264,8 +238,6 @@ public class BotCommands extends ListenerAdapter {
                 } else {
                     Member member = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
                     event.getGuild().kick(member, null).queue();
-                    EmbedBuilder embed = new EmbedBuilder();
-                    embed.setColor(Color.MAGENTA);
                     embed.setTitle("User kicked", null);
                     embed.setDescription(member.getAsMention() + " has been kicked.");
                     embed.setFooter(ftr, avURL);
@@ -273,8 +245,6 @@ public class BotCommands extends ListenerAdapter {
                     embed.clear();
                 }
             } else {
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setColor(Color.MAGENTA);
                 embed.setTitle(prefix + "kick <@member>", null);
                 embed.setDescription("Kicks a member.");
                 embed.setFooter(ftr, avURL);

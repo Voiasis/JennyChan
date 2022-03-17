@@ -1,8 +1,12 @@
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class CommandsList extends ListenerAdapter {
     public String prefix = "!"; //bot prefix
@@ -12,10 +16,10 @@ public class CommandsList extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         String[] args = event.getMessage().getContentRaw().split(" ");
-
-        if (args[0].equalsIgnoreCase(prefix + "commands")) {
             EmbedBuilder embed = new EmbedBuilder();
             embed.setColor(Color.MAGENTA);
+
+        if (args[0].equalsIgnoreCase(prefix + "commands")) {
             embed.setTitle("Commands", null);
             embed.setDescription("List of all bot commands.");
             
