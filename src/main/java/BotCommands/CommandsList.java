@@ -1,3 +1,4 @@
+package BotCommands;
 import java.awt.Color;
 
 import net.dv8tion.jda.api.EmbedBuilder;
