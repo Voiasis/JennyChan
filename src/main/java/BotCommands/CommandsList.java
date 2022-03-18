@@ -41,6 +41,8 @@ public class CommandsList extends ListenerAdapter {
             embed.setTitle("Commands. Page 2 of 2", null);
             embed.setDescription("");
 
+            embed.addField(prefix + "userinfo", "Shows users info.", false);
+            embed.addField(prefix + "serverinfo", "Shows server info.", false);
             embed.addField(prefix + "uptime", "Shows the bots uptime.", false);
             embed.addField(prefix + "ping", "Shows message response time.", false);
             embed.addField(prefix + "shutdown", "Shuts down bot.", false);
