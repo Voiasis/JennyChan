@@ -6,6 +6,7 @@ What it can do so far:
 - Reply to mention
 - List commands
 - Show bot uptime 
+- Server info
 - Show users avatar
 - Add reaction to message
 - Say command
@@ -28,8 +29,4 @@ Ideas for future:
 - Auto open threads in #suggetions for my server
 
 
-<<<<<<< HEAD
 # [Commands list](COMMANDS.md)
-=======
-# [Commands list](COMMANDS.md)
->>>>>>> 49ac0b190eaa00954fcc0f7548208f7a1b603170
