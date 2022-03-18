@@ -5,7 +5,7 @@
 
 - Shows avatar of user.
 
-!userinfo
+!userinfo [@user]
 
 - Shows users info.
 
