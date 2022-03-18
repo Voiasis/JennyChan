@@ -7,6 +7,7 @@ What it can do so far:
 - List commands
 - Show bot uptime 
 - Server info
+- Userinfo command
 - Show users avatar
 - Add reaction to message
 - Say command
