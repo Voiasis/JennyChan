@@ -1,4 +1,4 @@
-package main.java;
+package com.voiasis;
 
 import java.awt.Color;
 import java.lang.management.ManagementFactory;
@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-public class Commands extends ListenerAdapter {
+public class BotCommands extends ListenerAdapter {
     public String prefix = "!"; //bot prefix
     public String ftr = "Bot created by Voiasis#0001";
     public String avURL = "https://cdn.discordapp.com/avatars/472899069136601099/a_a4016f032af0656365c32677b5efe43e.gif";
@@ -62,6 +62,16 @@ public class Commands extends ListenerAdapter {
             event.getChannel().sendMessageEmbeds(embed.build()).queue();
             embed.clear();
         }
+//Music:
+
+        //join TODO
+        if (args[0].equalsIgnoreCase(prefix + "join")) {
+            if (event.getGuild().getSelfMember().getVoiceState().getChannel() != null) {
+
+            } else {
+                event.getGuild().getAudioManager().openAudioConnection(event.getGuild().getSelfMember().getVoiceState().getChannel());
+            }
+        }
 //Utilities:
 
         //about TODO
@@ -72,7 +82,7 @@ public class Commands extends ListenerAdapter {
         if (args[0].equalsIgnoreCase(prefix + "avatar")) {
             if(event.getMessage().getMentionedUsers().toArray().length == 1) {
                 Member member = event.getMessage().getMentionedMembers().get(0);
-                embed.setTitle("Link", member.getUser().getAvatarUrl() + "?size=1024");
+                embed.setTitle("Image Link", member.getUser().getAvatarUrl() + "?size=1024");
                 embed.setDescription("Avatar of " + member.getUser().getAsMention() + ".");
                 embed.setImage(member.getUser().getAvatarUrl() + "?size=1024");
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
@@ -86,7 +96,7 @@ public class Commands extends ListenerAdapter {
             }
         }
         //message
-        if (args[0].equalsIgnoreCase(prefix + "message")) {
+        /*if (args[0].equalsIgnoreCase(prefix + "message")) {
             if (event.getMessage().getMentionedUsers().toArray().length == 1) {
                 if (event.getMessage().getContentRaw().toCharArray().length >= 32) {
                     String msg = event.getMessage().getContentRaw().substring(32);
@@ -104,7 +114,7 @@ public class Commands extends ListenerAdapter {
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
-        }
+        }*/
         //ping TODO
         if (args[0].equalsIgnoreCase(prefix + "ping")) {
             long gw = event.getJDA().getGatewayPing();
@@ -128,18 +138,26 @@ public class Commands extends ListenerAdapter {
         }
         //react
         if (args[0].equalsIgnoreCase(prefix + "react")) {
-            if (event.getMessage().getContentRaw().toCharArray().length >= 7) {
-                String emoji1 = event.getMessage().getContentRaw().substring(9);
-                String emoji2 = emoji1.replaceFirst(">","");
-                Message msg = event.getMessage().getMessageReference().getMessage();
-                msg.addReaction(emoji2).queue();
-                event.getMessage().delete().queue();
-            } else {
-                embed.setTitle(prefix + "react <emoji>", null);
-                embed.setDescription("Adds reaction to replied message.");
+            try {
+                if (event.getMessage().getContentRaw().toCharArray().length >= 7) {
+                    String emoji1 = event.getMessage().getContentRaw().substring(9);
+                    String emoji2 = emoji1.replaceFirst(">","");
+                    Message msg = event.getMessage().getMessageReference().getMessage();
+                    msg.addReaction(emoji2).queue();
+                    event.getMessage().delete().queue();
+                } else {
+                    embed.setTitle(prefix + "react <emoji>", null);
+                    embed.setDescription("Adds reaction to replied message.");
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    embed.clear();
+                }
+            } catch(Exception ex) {
+                embed.setTitle("Error!", null);
+                embed.setDescription("You must reply to a message!");
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
+            
         }
         //serverinfo TODO
         if (args[0].equalsIgnoreCase(prefix + "serverinfo")) {
@@ -239,12 +257,34 @@ public class Commands extends ListenerAdapter {
         }
         //edit
         if (args[0].equalsIgnoreCase(prefix + "edit")) {
-            if (event.getMessage().getContentRaw().toCharArray().length >= 5) {
-                if (event.getMessage().getMessageReference().getMessageId().toCharArray().length >= 1){
-                    String msgid = event.getMessage().getMessageReference().getMessageId();
-                    event.getChannel().editMessageById(msgid, event.getMessage().getContentRaw().substring(6)).queue();
-                    event.getMessage().delete().queue();
+            try {
+                if (event.getMessage().getContentRaw().substring(6) == null) {
                 }
+                try {
+                    if (event.getMessage().getMessageReference().getMessageId().toCharArray().length >= 1) {
+                        
+                        if (event.getMessage().getReferencedMessage().getAuthor().getId().equalsIgnoreCase("952761165577060453")) {
+                            String msgid = event.getMessage().getMessageReference().getMessageId();
+                            event.getChannel().editMessageById(msgid, event.getMessage().getContentRaw().substring(6)).queue();
+                            event.getMessage().delete().queue();
+                        } else {
+                            embed.setTitle("Error!", null);
+                            embed.setDescription("I can only edit my own messages!");
+                            event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                            embed.clear();
+                        }
+                    }
+                } catch(Exception ex) {
+                    embed.setTitle("Error!", null);
+                    embed.setDescription("You must reply to one of my messages!");
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    embed.clear();
+                }
+            } catch(Exception ex) {
+                embed.setTitle(prefix + "edit <some text>", null);
+                embed.setDescription("Edits one of my messages.");
+                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                embed.clear();
             }
         }
         //giverole
@@ -326,13 +366,20 @@ public class Commands extends ListenerAdapter {
         }
         //reply
         if (args[0].equalsIgnoreCase(prefix + "reply")) {
-            if (event.getMessage().getContentRaw().toCharArray().length >= 7) {
-                Message msg = event.getMessage().getMessageReference().getMessage();
-                msg.reply(event.getMessage().getContentRaw().substring(7)).queue();
-                event.getMessage().delete().queue();
-            } else {
-                embed.setTitle(prefix + "reply <some text>", null);
-                embed.setDescription("Replies to replied message.");
+            try {
+                if (event.getMessage().getContentRaw().toCharArray().length >= 7) {
+                    Message msg = event.getMessage().getMessageReference().getMessage();
+                    msg.reply(event.getMessage().getContentRaw().substring(7)).queue();
+                    event.getMessage().delete().queue();
+                } else {
+                    embed.setTitle(prefix + "reply <some text>", null);
+                    embed.setDescription("Replies to replied message.");
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    embed.clear();
+                }
+            } catch(Exception ex) {
+                embed.setTitle("Error!", null);
+                embed.setDescription("You must reply to a message!");
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
