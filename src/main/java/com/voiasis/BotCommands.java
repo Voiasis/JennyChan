@@ -7,7 +7,9 @@ import java.lang.management.RuntimeMXBean;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -19,83 +21,158 @@ public class BotCommands extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         String[] args = event.getMessage().getContentRaw().split(" ");
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.setColor(Color.MAGENTA);
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setColor(Color.MAGENTA);
 
-        //commands list page 1
+        final Member member = event.getMember();
+        final User author = event.getAuthor();
+        final MessageChannel channel = event.getChannel();
+
+        //commands lists
         if (args[0].equalsIgnoreCase(prefix + "commands")) {
-            embed.setTitle("Commands. Page 1 of 2.", null);
-            embed.setDescription("");
+            try {  
+                if (args[1].equals("2")) {
+                    embed.setTitle("Commands. Page 2 of 2", null);
+                    embed.setDescription("");
+    
+                    embed.addField(prefix + "userinfo", "Shows users info.", false);
+                    embed.addField(prefix + "serverinfo", "Shows server info.", false);
+                    embed.addField(prefix + "uptime", "Shows the bots uptime.", false);
+                    embed.addField(prefix + "ping", "Shows message response time.", false);
+                    embed.addField(prefix + "shutdown", "Shuts down bot.", false);
+                    embed.addField(prefix + "commands", "Lists page 1 of commands.", false);
+                    embed.addField(prefix + "commands 2", "Lists page 2 of commands.", false);
+    
+                    embed.addField("","Use \"" + prefix + "commands\" to go to page 1.", false);
+                    embed.setFooter(ftr, avURL);
+                    channel.sendMessageEmbeds(embed.build()).queue();
+                    embed.clear();
+                } else if (args[1].equals("1")) {
+                    embed.setTitle("Commands. Page 1 of 2.", null);
+                    embed.setDescription("");
+        
+                    embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
+                    embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
+                    embed.addField(prefix + "say <some text>", "Sends text.", false);
+                    embed.addField(prefix + "reply <some text>", "Replys to replied message.", false);
+                    embed.addField(prefix + "edit <some text>", "Edits bot message you reply to.", false);
+                    embed.addField(prefix + "delete", "Deletes message you replied to.", false);
+                    embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
+                    embed.addField(prefix + "giverole <@role> <@user>", "Gives a user a role.", false);
+                    embed.addField(prefix + "removerole <@role> <@user>", "Removes a role from a user.", false);
+                    embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user.", false);
+
+                    embed.addField("","Use \"" + prefix + "commands 2\" to go to page 2.", false);
+                    embed.setFooter(ftr, avURL);
+                    channel.sendMessageEmbeds(embed.build()).queue();
+                    embed.clear();
+                } else { 
+                    embed.setTitle("Commands. Page 1 of 2.", null);
+                    embed.setDescription("");
+
+                    embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
+                    embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
+                    embed.addField(prefix + "say <some text>", "Sends text.", false);
+                    embed.addField(prefix + "reply <some text>", "Replys to replied message.", false);
+                    embed.addField(prefix + "edit <some text>", "Edits bot message you reply to.", false);
+                    embed.addField(prefix + "delete", "Deletes message you replied to.", false);
+                    embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
+                    embed.addField(prefix + "giverole <@role> <@user>", "Gives a user a role.", false);
+                    embed.addField(prefix + "removerole <@role> <@user>", "Removes a role from a user.", false);
+                    embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user.", false);
+
+                    embed.addField("","Use \"" + prefix + "commands 2\" to go to page 2.", false);
+                    embed.setFooter(ftr, avURL);
+                    channel.sendMessageEmbeds(embed.build()).queue();
+                    embed.clear();
+                }
+            } catch(Exception ex) {
+                embed.setTitle("Commands. Page 1 of 2.", null);
+                embed.setDescription("");
             
-            embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
-            embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
-            embed.addField(prefix + "say <some text>", "Sends text.", false);
-            embed.addField(prefix + "reply <some text>", "Replys to replied message.", false);
-            embed.addField(prefix + "edit <some text>", "Edits bot message you reply to.", false);
-            embed.addField(prefix + "delete", "Deletes message you replied to.", false);
-            embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
-            embed.addField(prefix + "giverole <@role> <@user>", "Gives a user a role.", false);
-            embed.addField(prefix + "removerole <@role> <@user>", "Removes a role from a user.", false);
-            embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user. Reason is optional.", false);
+                embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
+                embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
+                embed.addField(prefix + "say <some text>", "Sends text.", false);
+                embed.addField(prefix + "reply <some text>", "Replys to replied message.", false);
+                embed.addField(prefix + "edit <some text>", "Edits bot message you reply to.", false);
+                embed.addField(prefix + "delete", "Deletes message you replied to.", false);
+                embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
+                embed.addField(prefix + "giverole <@role> <@user>", "Gives a user a role.", false);
+                embed.addField(prefix + "removerole <@role> <@user>", "Removes a role from a user.", false);
+                embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user.", false);
 
-            embed.addField("","Use \"" + prefix + "commands2\" to go to page 2.", false);
-            embed.setFooter(ftr, avURL);
-            event.getChannel().sendMessageEmbeds(embed.build()).queue();
-            embed.clear();
+                embed.addField("","Use \"" + prefix + "commands 2\" to go to page 2.", false);
+                embed.setFooter(ftr, avURL);
+                channel.sendMessageEmbeds(embed.build()).queue();
+                embed.clear();
+            }
         } 
+//Music: TODO
 
-        //commands list page 2
-        if (args[0].equalsIgnoreCase(prefix + "commands2")) {
-            embed.setTitle("Commands. Page 2 of 2", null);
-            embed.setDescription("");
-
-            embed.addField(prefix + "userinfo", "Shows users info.", false);
-            embed.addField(prefix + "serverinfo", "Shows server info.", false);
-            embed.addField(prefix + "uptime", "Shows the bots uptime.", false);
-            embed.addField(prefix + "ping", "Shows message response time.", false);
-            embed.addField(prefix + "shutdown", "Shuts down bot.", false);
-            embed.addField(prefix + "commands", "Lists page 1 of commands.", false);
-            embed.addField(prefix + "commands2", "Lists page 2 of commands.", false);
-
-            embed.addField("","Use \"" + prefix + "commands\" to go to page 1.", false);
-            embed.setFooter(ftr, avURL);
-            event.getChannel().sendMessageEmbeds(embed.build()).queue();
-            embed.clear();
-        }
-//Music:
-
-        //join TODO
+        //join
         if (args[0].equalsIgnoreCase(prefix + "join")) {
-            if (event.getGuild().getSelfMember().getVoiceState().getChannel() != null) {
+            if (member.getVoiceState().getChannel() == null) {
+                embed.addField("Error!", "You must be in a voice channel!", false);
+                channel.sendMessageEmbeds(embed.build()).queue();
+                embed.clear();
+            } else {
+                event.getGuild().getAudioManager().openAudioConnection(member.getVoiceState().getChannel());
+                embed.addField("Connected", "Joined the voice channel.", false);
+                channel.sendMessageEmbeds(embed.build()).queue();
+                embed.clear();
+            }
+        }
+        //leave
+        if (args[0].equalsIgnoreCase(prefix + "leave")) {
+            if (event.getGuild().getSelfMember().getVoiceState().getChannel() == null) {
+                embed.addField("Error!", "I'm not in a voice channel!", false);
+                channel.sendMessageEmbeds(embed.build()).queue();
+                embed.clear();
+            } else {
+                event.getGuild().getAudioManager().closeAudioConnection();
+                embed.addField("Disconnected", "Left the voice channel.", false);
+                channel.sendMessageEmbeds(embed.build()).queue();
+                embed.clear();
+            }
+        }
+        //play
+        if (args[0].equalsIgnoreCase(prefix + "play")) {
+            if (event.getGuild().getSelfMember().getVoiceState().getChannel() == null) {
+                event.getGuild().getAudioManager().openAudioConnection(member.getVoiceState().getChannel());
+
 
             } else {
-                event.getGuild().getAudioManager().openAudioConnection(event.getGuild().getSelfMember().getVoiceState().getChannel());
+                //
             }
+        }
+        //skip
+        if (args[0].equalsIgnoreCase(prefix + "skip")) {
+
         }
 //Utilities:
 
         //about TODO
         if (args[0].equalsIgnoreCase(prefix + "about")) {
-            //about the bot
+            //about the bot. why have i still not added anything. pure laziness maybe?
         }
         //avatar
         if (args[0].equalsIgnoreCase(prefix + "avatar")) {
             if(event.getMessage().getMentionedUsers().toArray().length == 1) {
-                Member member = event.getMessage().getMentionedMembers().get(0);
-                embed.setTitle("Image Link", member.getUser().getAvatarUrl() + "?size=1024");
-                embed.setDescription("Avatar of " + member.getUser().getAsMention() + ".");
-                embed.setImage(member.getUser().getAvatarUrl() + "?size=1024");
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                Member mentioned = event.getMessage().getMentionedMembers().get(0);
+                embed.setTitle("Image Link", mentioned.getUser().getAvatarUrl() + "?size=1024");
+                embed.setDescription("Avatar of " + mentioned.getUser().getAsMention() + ".");
+                embed.setImage(mentioned.getUser().getAvatarUrl() + "?size=1024");
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();    
             } else {
-                embed.setTitle("Link", event.getAuthor().getAvatarUrl() + "?size=1024");
-                embed.setDescription("Avatar of " + event.getAuthor().getAsMention() + ".");
-                embed.setImage(event.getAuthor().getAvatarUrl() + "?size=1024");
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                embed.setTitle("Image Link", author.getAvatarUrl() + "?size=1024");
+                embed.setDescription("Avatar of " + author.getAsMention() + ".");
+                embed.setImage(author.getAvatarUrl() + "?size=1024");
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         }
-        //message
+        //message TODO
         /*if (args[0].equalsIgnoreCase(prefix + "message")) {
             if (event.getMessage().getMentionedUsers().toArray().length == 1) {
                 if (event.getMessage().getContentRaw().toCharArray().length >= 32) {
@@ -105,13 +182,13 @@ public class BotCommands extends ListenerAdapter {
                 } else {
                     embed.setTitle(prefix + "message <@user> <some text>", null);
                     embed.setDescription("Sends user a message.");
-                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
             } else {
                 embed.setTitle(prefix + "message <@user> <some text>", null);
                 embed.setDescription("Sends user a message.");
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         }*/
@@ -123,7 +200,7 @@ public class BotCommands extends ListenerAdapter {
             embed.setDescription("");
             embed.addField("Ping:", "...." + "ms", false);
             embed.addField("Websocket:", gwp + "ms", false);
-            event.getChannel().sendMessageEmbeds(embed.build()).queue();
+            channel.sendMessageEmbeds(embed.build()).queue();
             embed.clear();
 
             
@@ -140,24 +217,28 @@ public class BotCommands extends ListenerAdapter {
         if (args[0].equalsIgnoreCase(prefix + "react")) {
             try {
                 if (event.getMessage().getContentRaw().toCharArray().length >= 7) {
-                    String emoji1 = event.getMessage().getContentRaw().substring(9);
-                    String emoji2 = emoji1.replaceFirst(">","");
-                    Message msg = event.getMessage().getMessageReference().getMessage();
-                    msg.addReaction(emoji2).queue();
-                    event.getMessage().delete().queue();
+                    String content = event.getMessage().getContentRaw().substring(7);
+                    if (content.startsWith("<")) {
+                        String emoji1 = event.getMessage().getContentRaw().substring(9);
+                        String emoji2 = emoji1.replaceFirst(">","");
+                        Message msg = event.getMessage().getMessageReference().getMessage();
+                        msg.addReaction(emoji2).queue();
+                        event.getMessage().delete().queue();
+                    } else {
+                        embed.addField("Error!", "That is not an emoji!", false);
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                        embed.clear();
+                    }
                 } else {
-                    embed.setTitle(prefix + "react <emoji>", null);
-                    embed.setDescription("Adds reaction to replied message.");
-                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
+                    channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
             } catch(Exception ex) {
-                embed.setTitle("Error!", null);
-                embed.setDescription("You must reply to a message!");
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                embed.addField("Error!", "You must reply to a message!", false);
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
-            
         }
         //serverinfo TODO
         if (args[0].equalsIgnoreCase(prefix + "serverinfo")) {
@@ -188,18 +269,18 @@ public class BotCommands extends ListenerAdapter {
             embed.addField("Banner", "", false);
             embed.setImage(event.getGuild().getBannerUrl());
 
-            event.getChannel().sendMessageEmbeds(embed.build()).queue();
+            channel.sendMessageEmbeds(embed.build()).queue();
             embed.clear();
         }
         //shutdown
         if (args[0].equalsIgnoreCase(prefix + "shutdown")) {
-            String authorID = event.getAuthor().getId();
+            String authorID = author.getId();
             if (authorID != "472899069136601099") {
                 System.exit(1);
             } else {
                 embed.setTitle("Error", null);
                 embed.setDescription("You are not the owner of the bot!");
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         } 
@@ -214,26 +295,26 @@ public class BotCommands extends ListenerAdapter {
             String uptime = String.format("%02d:%02d:%02d.%d", hour, minute, second, millis);
             embed.setTitle("JennyChan's Uptime", null);
             embed.setDescription("" + uptime);
-            event.getChannel().sendMessageEmbeds(embed.build()).queue();
+            channel.sendMessageEmbeds(embed.build()).queue();
             embed.clear();
         }
         //userinfo
         if (args[0].equalsIgnoreCase(prefix + "userinfo")) {
             if (event.getMessage().getMentionedUsers().toArray().length == 1) {
-                Member member = event.getMessage().getMentionedMembers().get(0);
+                Member mentioned = event.getMessage().getMentionedMembers().get(0);
 
-                embed.setAuthor(member.getUser().getAsTag(), null);
-                embed.setDescription(member.getAsMention());
-                embed.addField("User ID", member.getId(), false);
-                embed.setThumbnail(member.getUser().getAvatarUrl());
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                embed.setAuthor(mentioned.getUser().getAsTag(), null);
+                embed.setDescription(mentioned.getAsMention());
+                embed.addField("User ID", mentioned.getId(), false);
+                embed.setThumbnail(mentioned.getUser().getAvatarUrl());
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             } else {
-                embed.setAuthor(event.getAuthor().getAsTag(), null);
-                embed.setDescription(event.getAuthor().getAsMention());
-                embed.addField("User ID", event.getAuthor().getId(), false);
-                embed.setThumbnail(event.getAuthor().getAvatarUrl());
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                embed.setAuthor(author.getAsTag(), null);
+                embed.setDescription(author.getAsMention());
+                embed.addField("User ID", author.getId(), false);
+                embed.setThumbnail(author.getAvatarUrl());
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         }
@@ -245,13 +326,15 @@ public class BotCommands extends ListenerAdapter {
         }
         //delete
         if (args[0].equalsIgnoreCase(prefix + "delete")) {
-            if (event.getMessage().getMessageReference().getMessageId().toCharArray().length >= 5){
-                event.getChannel().deleteMessageById(event.getMessage().getMessageReference().getMessageId()).queue();
-                event.getMessage().delete().queue();
-            } else {
+            try {
+                if (event.getMessage().getMessageReference().getMessageId().toCharArray().length >= 5){
+                    channel.deleteMessageById(event.getMessage().getMessageReference().getMessageId()).queue();
+                    event.getMessage().delete().queue();
+                }
+            } catch(Exception ex) {
                 embed.setTitle(prefix + "delete", null);
-                embed.setDescription("Deletes message you reply to.");
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                embed.setDescription("Deletes the message you reply to.");
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         }
@@ -265,25 +348,25 @@ public class BotCommands extends ListenerAdapter {
                         
                         if (event.getMessage().getReferencedMessage().getAuthor().getId().equalsIgnoreCase("952761165577060453")) {
                             String msgid = event.getMessage().getMessageReference().getMessageId();
-                            event.getChannel().editMessageById(msgid, event.getMessage().getContentRaw().substring(6)).queue();
+                            channel.editMessageById(msgid, event.getMessage().getContentRaw().substring(6)).queue();
                             event.getMessage().delete().queue();
                         } else {
                             embed.setTitle("Error!", null);
                             embed.setDescription("I can only edit my own messages!");
-                            event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                            channel.sendMessageEmbeds(embed.build()).queue();
                             embed.clear();
                         }
                     }
                 } catch(Exception ex) {
                     embed.setTitle("Error!", null);
                     embed.setDescription("You must reply to one of my messages!");
-                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
             } catch(Exception ex) {
                 embed.setTitle(prefix + "edit <some text>", null);
                 embed.setDescription("Edits one of my messages.");
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         }
@@ -291,21 +374,30 @@ public class BotCommands extends ListenerAdapter {
         if (args[0].equalsIgnoreCase(prefix + "giverole")) {
             if (event.getMessage().getMentionedRoles().toArray().length == 1) {
                 if (event.getMessage().getMentionedUsers().toArray().length == 1) {
-                    Member member = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+                    Member mentioned = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
                     Role roleToGive = event.getMessage().getMentionedRoles().get(0);
-                    event.getGuild().addRoleToMember(member, roleToGive).queue();
-
-                    event.getMessage().reply("Gave the role " + roleToGive.getAsMention() + " to " + member.getAsMention() + ".").queue();
+                    try {
+                        event.getGuild().addRoleToMember(mentioned, roleToGive).queue();
+                        embed.setTitle("Role given.", null);
+                        embed.setDescription("Gave the role of " + roleToGive.getAsMention() + " to " + mentioned.getAsMention() + ".");
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                        embed.clear();
+                    } catch(Exception ex) {
+                        embed.setTitle("Error!", null);
+                        embed.setDescription("That role is higher then mine!");
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                        embed.clear();
+                    }
                 } else {
-                    embed.setTitle(prefix + "giverole <@role> <@user>", null);
-                    embed.setDescription("Gives a user a role.");
-                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    embed.setTitle("Error!", null);
+                    embed.setDescription("You must specify a user!");
+                    channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
             } else {
                 embed.setTitle(prefix + "giverole <@role> <@user>", null);
                 embed.setDescription("Gives a user a role.");
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         }
@@ -313,29 +405,28 @@ public class BotCommands extends ListenerAdapter {
         if (args[0].equalsIgnoreCase(prefix + "kick")) {
             if (event.getMessage().getMentionedUsers().toArray().length == 1) {
                 if (event.getMessage().getContentRaw().toCharArray().length >= 29) {
-                    //kick with reason
-                    Member member = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+                    Member mentioned = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
                     String reason = event.getMessage().getContentRaw().substring(29);
-                    event.getGuild().kick(member, reason).queue();
+                    event.getGuild().kick(mentioned, reason).queue();
                     embed.setTitle("User kicked", null);
-                    embed.setDescription(member.getAsMention() + " has been kicked with reason \"" + reason +"\".");
+                    embed.setDescription(mentioned.getAsMention() + " has been kicked with reason \"" + reason +"\".");
                     embed.setFooter(ftr, avURL);
-                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 } else {
-                    Member member = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
-                    event.getGuild().kick(member, null).queue();
+                    Member mentioned = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+                    event.getGuild().kick(mentioned, null).queue();
                     embed.setTitle("User kicked", null);
-                    embed.setDescription(member.getAsMention() + " has been kicked.");
+                    embed.setDescription(mentioned.getAsMention() + " has been kicked.");
                     embed.setFooter(ftr, avURL);
-                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
             } else {
-                embed.setTitle(prefix + "kick <@member>", null);
-                embed.setDescription("Kicks a member.");
+                embed.setTitle(prefix + "kick <@user> [<reason>]", null);
+                embed.setDescription("Kicks a user.");
                 embed.setFooter(ftr, avURL);
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         }
@@ -347,20 +438,30 @@ public class BotCommands extends ListenerAdapter {
         if (args[0].equalsIgnoreCase(prefix + "removerole")) {
             if (event.getMessage().getMentionedRoles().toArray().length == 1) {
                 if (event.getMessage().getMentionedUsers().toArray().length == 1) {
-                    Member member = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+                    Member mentioned = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
                     Role roleToRemove = event.getMessage().getMentionedRoles().get(0);
-                    event.getGuild().removeRoleFromMember(member, roleToRemove).queue();
-                    event.getMessage().reply("Removed the role " + roleToRemove.getAsMention() + " from " + member.getAsMention() + '.').queue();
+                    try {
+                        event.getGuild().removeRoleFromMember(mentioned, roleToRemove).queue();
+                        embed.setTitle("Role removed.", null);
+                        embed.setDescription("Removed the role of " + roleToRemove.getAsMention() + " from " + mentioned.getAsMention() + ".");
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                        embed.clear();
+                    } catch(Exception ex) {
+                        embed.setTitle("Error!", null);
+                        embed.setDescription("That role is higher then mine!");
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                        embed.clear();
+                    }  
                 } else {
-                    embed.setTitle(prefix + "removerole <@role> <@user>", null);
+                    embed.setTitle(prefix + "removerole <@role> <@user>1", null);
                     embed.setDescription("Removes a role from a user.");
-                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
             } else {
-                embed.setTitle(prefix + "removerole <@role> <@user>", null);
+                embed.setTitle(prefix + "removerole <@role> <@user>2", null);
                 embed.setDescription("Removes a role from a user.");
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         }
@@ -374,25 +475,25 @@ public class BotCommands extends ListenerAdapter {
                 } else {
                     embed.setTitle(prefix + "reply <some text>", null);
                     embed.setDescription("Replies to replied message.");
-                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
             } catch(Exception ex) {
                 embed.setTitle("Error!", null);
                 embed.setDescription("You must reply to a message!");
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         }
         //say
         if (args[0].equalsIgnoreCase(prefix + "say")) {
             if (event.getMessage().getContentRaw().toCharArray().length >= 5) {
-                event.getChannel().sendMessage(event.getMessage().getContentRaw().substring(5)).queue();
+                channel.sendMessage(event.getMessage().getContentRaw().substring(5)).queue();
                 event.getMessage().delete().queue();
             } else {
                 embed.setTitle(prefix + "say <some text>", null);
                 embed.setDescription("Sends inputted text.");
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
         }
