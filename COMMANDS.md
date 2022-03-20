@@ -5,6 +5,14 @@
 
 - Shows avatar of user.
 
+!userinfo [<@user>]
+
+- Shows users info.
+
+!serverinfo
+
+- Shows server info.
+
 !react <emoji>
   
 - Adds reaction to replied message.
