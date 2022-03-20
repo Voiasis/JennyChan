@@ -1,6 +1,8 @@
 # JennyChan
 This is some Discord bot I made to help me learn Java. Not very useful yet..
 
+Last commit broke everything. Working on a fix.
+
 
 What it can do so far:
 - Reply to mention
