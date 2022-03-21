@@ -4,20 +4,28 @@ import java.awt.Color;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 
+import javax.sound.midi.Track;
+
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class BotCommands extends ListenerAdapter {
+    
     public String prefix = "!"; //bot prefix
-    public String ftr = "Bot created by Voiasis#0001";
-    public String avURL = "https://cdn.discordapp.com/avatars/472899069136601099/a_a4016f032af0656365c32677b5efe43e.gif";
-
+    
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         String[] args = event.getMessage().getContentRaw().split(" ");
@@ -27,6 +35,12 @@ public class BotCommands extends ListenerAdapter {
         final Member member = event.getMember();
         final User author = event.getAuthor();
         final MessageChannel channel = event.getChannel();
+        final Member self = event.getGuild().getSelfMember();
+        final GuildVoiceState selfVoiceState = self.getVoiceState();
+
+        String ftr = "Command executed by " + event.getAuthor().getAsTag();
+        String avURL = event.getAuthor().getAvatarUrl();
+        embed.setFooter(ftr, avURL);
 
         //commands lists
         if (args[0].equalsIgnoreCase(prefix + "commands")) {
@@ -44,7 +58,6 @@ public class BotCommands extends ListenerAdapter {
                     embed.addField(prefix + "commands 2", "Lists page 2 of commands.", false);
     
                     embed.addField("","Use \"" + prefix + "commands\" to go to page 1.", false);
-                    embed.setFooter(ftr, avURL);
                     channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 } else if (args[1].equals("1")) {
@@ -63,7 +76,6 @@ public class BotCommands extends ListenerAdapter {
                     embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user.", false);
 
                     embed.addField("","Use \"" + prefix + "commands 2\" to go to page 2.", false);
-                    embed.setFooter(ftr, avURL);
                     channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 } else { 
@@ -82,7 +94,6 @@ public class BotCommands extends ListenerAdapter {
                     embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user.", false);
 
                     embed.addField("","Use \"" + prefix + "commands 2\" to go to page 2.", false);
-                    embed.setFooter(ftr, avURL);
                     channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
@@ -102,53 +113,10 @@ public class BotCommands extends ListenerAdapter {
                 embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user.", false);
 
                 embed.addField("","Use \"" + prefix + "commands 2\" to go to page 2.", false);
-                embed.setFooter(ftr, avURL);
                 channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
-        } 
-//Music: TODO
-
-        //join
-        if (args[0].equalsIgnoreCase(prefix + "join")) {
-            if (member.getVoiceState().getChannel() == null) {
-                embed.addField("Error!", "You must be in a voice channel!", false);
-                channel.sendMessageEmbeds(embed.build()).queue();
-                embed.clear();
-            } else {
-                event.getGuild().getAudioManager().openAudioConnection(member.getVoiceState().getChannel());
-                embed.addField("Connected", "Joined the voice channel.", false);
-                channel.sendMessageEmbeds(embed.build()).queue();
-                embed.clear();
-            }
-        }
-        //leave
-        if (args[0].equalsIgnoreCase(prefix + "leave")) {
-            if (event.getGuild().getSelfMember().getVoiceState().getChannel() == null) {
-                embed.addField("Error!", "I'm not in a voice channel!", false);
-                channel.sendMessageEmbeds(embed.build()).queue();
-                embed.clear();
-            } else {
-                event.getGuild().getAudioManager().closeAudioConnection();
-                embed.addField("Disconnected", "Left the voice channel.", false);
-                channel.sendMessageEmbeds(embed.build()).queue();
-                embed.clear();
-            }
-        }
-        //play
-        if (args[0].equalsIgnoreCase(prefix + "play")) {
-            if (event.getGuild().getSelfMember().getVoiceState().getChannel() == null) {
-                event.getGuild().getAudioManager().openAudioConnection(member.getVoiceState().getChannel());
-
-
-            } else {
-                //
-            }
-        }
-        //skip
-        if (args[0].equalsIgnoreCase(prefix + "skip")) {
-
-        }
+        }      
 //Utilities:
 
         //about TODO
@@ -410,7 +378,6 @@ public class BotCommands extends ListenerAdapter {
                     event.getGuild().kick(mentioned, reason).queue();
                     embed.setTitle("User kicked", null);
                     embed.setDescription(mentioned.getAsMention() + " has been kicked with reason \"" + reason +"\".");
-                    embed.setFooter(ftr, avURL);
                     channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 } else {
@@ -418,14 +385,12 @@ public class BotCommands extends ListenerAdapter {
                     event.getGuild().kick(mentioned, null).queue();
                     embed.setTitle("User kicked", null);
                     embed.setDescription(mentioned.getAsMention() + " has been kicked.");
-                    embed.setFooter(ftr, avURL);
                     channel.sendMessageEmbeds(embed.build()).queue();
                     embed.clear();
                 }
             } else {
                 embed.setTitle(prefix + "kick <@user> [<reason>]", null);
                 embed.setDescription("Kicks a user.");
-                embed.setFooter(ftr, avURL);
                 channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
             }
@@ -506,4 +471,12 @@ public class BotCommands extends ListenerAdapter {
             //
         }
     } //add commands above this
+
+    private TrackScheduler TrackScheduler(GuildMusicManager musicManager) {
+        return null;
+    }
+
+    private GuildMusicManager getGuildAudioPlayer(Guild guild) {
+        return null;
+    }
 }

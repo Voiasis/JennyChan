@@ -3,8 +3,3 @@
 .git
 target
 .idea
-
-#Temporarily placed here until music is properly implemented. wip
-AudioPlayerSendHandler.java
-GuildMusicManager.java
-TrackScheduler.java
