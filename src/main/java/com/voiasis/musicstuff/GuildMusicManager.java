@@ -1,4 +1,4 @@
-package com.voiasis;
+package com.voiasis.musicstuff;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
