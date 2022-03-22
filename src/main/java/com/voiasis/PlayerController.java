@@ -60,6 +60,7 @@ public class PlayerController extends ListenerAdapter {
 
       EmbedBuilder embed = new EmbedBuilder();
       embed.setColor(Color.MAGENTA);
+      embed.setFooter("Command executed by " + event.getAuthor().getAsTag(), event.getAuthor().getAvatarUrl());
 
       final Member member = event.getMember();
       final User author = event.getAuthor();
@@ -72,7 +73,8 @@ public class PlayerController extends ListenerAdapter {
 
 //Music commands
 
-      //join
+      if (!author.isBot()) {
+        //join
       if (args[0].equalsIgnoreCase(prefix + "join")) {
         if (member.getVoiceState().getChannel() == null) {
             embed.addField("Error!", "You must be in a voice channel!", false);
@@ -130,6 +132,9 @@ public class PlayerController extends ListenerAdapter {
       if (args[0].equalsIgnoreCase(prefix + "stop")) {
           
       }
+    }
+      
+      
   }
 
   public void loadAndPlay(final TextChannel channel, final String trackUrl) {
@@ -184,9 +189,13 @@ public class PlayerController extends ListenerAdapter {
     });
   }
 
-  private void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
+  public void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
 
     musicManager.scheduler.queue(track);
+  }
+
+  public void pause() {
+
   }
 
   public void skipTrack(TextChannel channel) {

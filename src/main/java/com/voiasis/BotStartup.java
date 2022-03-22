@@ -17,9 +17,9 @@ public class BotStartup {
         String token = Files.readString(Path.of("E:\\Dev\\JennyChan\\.env"));
 
         JDABuilder.createDefault(token)
-        .setStatus(OnlineStatus.ONLINE)
-        .setActivity(Activity.playing("Minecraft"))
-        .addEventListeners(new BotCommands(), new PlayerController())
+        .setStatus(OnlineStatus.DO_NOT_DISTURB)
+        .setActivity(Activity.watching("Hentai with Voiasis"))
+        .addEventListeners(new BotCommands(), new PlayerController(), new AutoTasks())
         .setChunkingFilter(ChunkingFilter.ALL)
         .setMemberCachePolicy(MemberCachePolicy.ALL)
         .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGES)
