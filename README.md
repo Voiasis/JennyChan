@@ -9,6 +9,8 @@ What it can do so far:
 - Show bot uptime 
 - Server info (wip)
 - Userinfo command
+- Mute users with optional reason (times them out, doesnt use cringy roles)
+- Checks permissions before using moderation commands
 - Show users avatar
 - Add reaction to message
 - Say command
@@ -24,7 +26,6 @@ What it can do so far:
 
 Ideas for future:
 - Finish ping command
-- Check user perms with moderation commands
 - Ban with optional time and/or reason
 - All commands work with bot mention
 - Interaction commands
