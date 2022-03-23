@@ -13,8 +13,10 @@ public class AutoTasks extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) { 
         if (event.getChannel().getId().equals("927712748488507433")) {
+        
             event.getMessage().createThreadChannel("[" + event.getAuthor().getName() + "] Suggestion Discussion").queue();
         }
+
 
         if (event.getChannel().getId().equals("876521430555168768")) {
             event.getMessage().createThreadChannel("[" + event.getAuthor().getName() + "] Suggestion Discussion").queue();
@@ -23,6 +25,8 @@ public class AutoTasks extends ListenerAdapter {
         String msgc = event.getMessage().getContentRaw();
         String msgl = msgc.toLowerCase();
         String msg = " " + msgl + " ";
+
+        //custom chat filters
         if (msg.contains(" ur ")) {
             if (event.getAuthor().getId().equals("472899069136601099")) {
                 //
@@ -37,7 +41,6 @@ public class AutoTasks extends ListenerAdapter {
                 //
             } else {
                 event.getMessage().delete().queue();
-                event.getChannel().sendMessage(event.getAuthor().getAsMention() + " L").queueAfter(1, TimeUnit.SECONDS);
             }
         }
 
@@ -46,15 +49,16 @@ public class AutoTasks extends ListenerAdapter {
                 //
             } else {
                 event.getMessage().delete().queue();
-                event.getChannel().sendMessage(event.getAuthor().getAsMention() + " L").queueAfter(1, TimeUnit.SECONDS);
             }
         }
 
-        if (msgc.contains("nigg")) {
+        if (msgl.contains("nigg")) {
             event.getMessage().delete().queue();
+            event.getMessage().getMember().timeoutFor(6942, TimeUnit.MINUTES).queue();
+            event.getChannel().sendMessage(event.getAuthor().getAsMention() + " has been timed out for saying the nword.").queue();
         }
 
-        if (msgc.contains("retard")) {
+        if (msgl.contains("retard")) {
             event.getMessage().delete().queue();
         }
     }

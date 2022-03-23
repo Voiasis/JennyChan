@@ -10,14 +10,16 @@ import java.util.concurrent.TimeUnit;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class BotCommands extends ListenerAdapter {
     
@@ -34,91 +36,18 @@ public class BotCommands extends ListenerAdapter {
         final User author = event.getAuthor();
         final MessageChannel channel = event.getChannel();
         final Member self = event.getGuild().getSelfMember();
-        final GuildVoiceState selfVoiceState = self.getVoiceState();
 
         LocalDateTime now = LocalDateTime.now();;
 
-        if (!author.isBot()) {
-            //commands lists
-        if (args[0].equalsIgnoreCase(prefix + "commands")) {
-            try {  
-                if (args[1].equals("2")) {
-                    embed.setTitle("Commands. Page 2 of 2", null);
-                    embed.setDescription("");
-    
-                    embed.addField(prefix + "userinfo", "Shows users info.", false);
-                    embed.addField(prefix + "serverinfo", "Shows server info.", false);
-                    embed.addField(prefix + "uptime", "Shows the bots uptime.", false);
-                    embed.addField(prefix + "ping", "Shows message response time.", false);
-                    embed.addField(prefix + "shutdown", "Shuts down bot.", false);
-                    embed.addField(prefix + "commands", "Lists page 1 of commands.", false);
-                    embed.addField(prefix + "commands 2", "Lists page 2 of commands.", false);
-    
-                    embed.addField("","Use \"" + prefix + "commands\" to go to page 1.", false);
-                    channel.sendMessageEmbeds(embed.build()).queue();
-                    embed.clear();
-                } else if (args[1].equals("1")) {
-                    embed.setTitle("Commands. Page 1 of 2.", null);
-                    embed.setDescription("");
-        
-                    embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
-                    embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
-                    embed.addField(prefix + "say <some text>", "Sends text.", false);
-                    embed.addField(prefix + "reply <some text>", "Replys to replied message.", false);
-                    embed.addField(prefix + "edit <some text>", "Edits bot message you reply to.", false);
-                    embed.addField(prefix + "delete", "Deletes message you replied to.", false);
-                    embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
-                    embed.addField(prefix + "giverole <@role> <@user>", "Gives a user a role.", false);
-                    embed.addField(prefix + "removerole <@role> <@user>", "Removes a role from a user.", false);
-                    embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user.", false);
-
-                    embed.addField("","Use \"" + prefix + "commands 2\" to go to page 2.", false);
-                    channel.sendMessageEmbeds(embed.build()).queue();
-                    embed.clear();
-                } else { 
-                    embed.setTitle("Commands. Page 1 of 2.", null);
-                    embed.setDescription("");
-
-                    embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
-                    embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
-                    embed.addField(prefix + "say <some text>", "Sends text.", false);
-                    embed.addField(prefix + "reply <some text>", "Replys to replied message.", false);
-                    embed.addField(prefix + "edit <some text>", "Edits bot message you reply to.", false);
-                    embed.addField(prefix + "delete", "Deletes message you replied to.", false);
-                    embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
-                    embed.addField(prefix + "giverole <@role> <@user>", "Gives a user a role.", false);
-                    embed.addField(prefix + "removerole <@role> <@user>", "Removes a role from a user.", false);
-                    embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user.", false);
-
-                    embed.addField("","Use \"" + prefix + "commands 2\" to go to page 2.", false);
-                    channel.sendMessageEmbeds(embed.build()).queue();
-                    embed.clear();
-                }
-            } catch(Exception ex) {
-                embed.setTitle("Commands. Page 1 of 2.", null);
-                embed.setDescription("");
-            
-                embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
-                embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
-                embed.addField(prefix + "say <some text>", "Sends text.", false);
-                embed.addField(prefix + "reply <some text>", "Replys to replied message.", false);
-                embed.addField(prefix + "edit <some text>", "Edits bot message you reply to.", false);
-                embed.addField(prefix + "delete", "Deletes message you replied to.", false);
-                embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
-                embed.addField(prefix + "giverole <@role> <@user>", "Gives a user a role.", false);
-                embed.addField(prefix + "removerole <@role> <@user>", "Removes a role from a user.", false);
-                embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user.", false);
-
-                embed.addField("","Use \"" + prefix + "commands 2\" to go to page 2.", false);
-                channel.sendMessageEmbeds(embed.build()).queue();
-                embed.clear();
-            }
-        }      
+        if (author.isBot()) {
+            //
+        } else {
+      
 //Utilities:
 
         //reaction page system test
         if (args[0].equalsIgnoreCase(prefix + "page")) {
-            event.getMessage().reply("page test");
+            event.getChannel().sendMessage("test").setActionRow(Button.primary("page:2", Emoji.fromMarkdown("▶️"))).queue();
             
         }
         //about TODO
@@ -143,11 +72,13 @@ public class BotCommands extends ListenerAdapter {
             }
         }
         //message TODO
-        /*if (args[0].equalsIgnoreCase(prefix + "message")) {
+        if (args[0].equalsIgnoreCase(prefix + "message")) {
             if (event.getMessage().getMentionedUsers().toArray().length == 1) {
                 if (event.getMessage().getContentRaw().toCharArray().length >= 32) {
                     String msg = event.getMessage().getContentRaw().substring(32);
-                    member.getUser().openPrivateChannel().queue(); <- broken //TODO
+                    member.getUser().openPrivateChannel().queue((ch) -> {
+                        ch.sendMessage(msg).queue();
+                    });
                 } else {
                     embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
                     channel.sendMessageEmbeds(embed.build()).queue();
@@ -157,28 +88,23 @@ public class BotCommands extends ListenerAdapter {
                 embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
                 channel.sendMessageEmbeds(embed.build()).queue();
                 embed.clear();
-            }*/
+            }
         }
-        //ping TODO
+        //ping
         if (args[0].equalsIgnoreCase(prefix + "ping")) {
             long gw = event.getJDA().getGatewayPing();
             String gwp = Long.toString(gw);
             embed.setTitle("Pong!", null);
-            embed.setDescription("");
-            embed.addField("Ping:", "...." + "ms", false);
-            embed.addField("Websocket:", gwp + "ms", false);
-            channel.sendMessageEmbeds(embed.build()).queue();
+            embed.setDescription("Ping: ... \nWebsocket: ...");
+            channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                long ping = event.getMessage().getTimeCreated().until(message.getTimeCreated(), ChronoUnit.MILLIS);
+                embed.setTitle("Pong!", null);
+                embed.setDescription("Ping: " + ping + " ms\nWebsocket: " + gwp + " ms");
+                embed.setColor(Color.MAGENTA);
+                embed.setFooter("Command executed by " + event.getAuthor().getAsTag(), event.getAuthor().getAvatarUrl());
+                message.editMessageEmbeds(embed.build()).queue();
+            });
             embed.clear();
-
-            
-            
-
-            //event.getMessage().reply("Ping: ... | Websocket: " + event.getJDA().getGatewayPing() + "ms").queue();
-
-            //Temporal m = event.getMessage().getTimeCreated();
-           // long ping = event.getMessage().getTimeCreated().until(m, ChronoUnit.MILLIS);
-            
-            //event.getMessage().editMessage(arg0)
         }
         //react
         if (args[0].equalsIgnoreCase(prefix + "react")) {
@@ -323,6 +249,12 @@ public class BotCommands extends ListenerAdapter {
             }
         }
 //Moderation:
+
+        //lock
+
+
+        //unlock
+
 
         //steal TODO
         if (args[0].equalsIgnoreCase(prefix + "steal")) {
@@ -495,7 +427,7 @@ public class BotCommands extends ListenerAdapter {
                                         String msgt = msga.replace(msga.substring(msga.length()-1), "");
                                         long time = Long.parseLong(msgt);
                                         mentioned.timeoutFor(time, TimeUnit.SECONDS).reason(reason).queue();
-                                        embed.addField("User muted", mentioned.getAsMention() + " has been muted for " + time + " seconds with reason \"" + reason + "\".", false);
+                                        embed.addField("User Muted", mentioned.getAsMention() + " has been muted for " + time + " seconds with reason \"" + reason + "\".", false);
                                         channel.sendMessageEmbeds(embed.build()).queue();
                                         embed.clear();
                                     } else if (msga.endsWith("m")) {
@@ -503,7 +435,7 @@ public class BotCommands extends ListenerAdapter {
                                         String msgt = msga.replace(msga.substring(msga.length()-1), "");
                                         long time = Long.parseLong(msgt);
                                         mentioned.timeoutFor(time, TimeUnit.MINUTES).reason(reason).queue();
-                                        embed.addField("User muted", mentioned.getAsMention() + " has been muted for " + time + " minutes with reason \"" + reason + "\".", false);
+                                        embed.addField("User Muted", mentioned.getAsMention() + " has been muted for " + time + " minutes with reason \"" + reason + "\".", false);
                                         channel.sendMessageEmbeds(embed.build()).queue();
                                         embed.clear();
                                     } else if (msga.endsWith("h")) {
@@ -511,7 +443,7 @@ public class BotCommands extends ListenerAdapter {
                                         String msgt = msga.replace(msga.substring(msga.length()-1), "");
                                         long time = Long.parseLong(msgt);
                                         mentioned.timeoutFor(time, TimeUnit.HOURS).reason(reason).queue();
-                                        embed.addField("User muted", mentioned.getAsMention() + " has been muted for " + time + " hours with reason \"" + reason + "\".", false);
+                                        embed.addField("User Muted", mentioned.getAsMention() + " has been muted for " + time + " hours with reason \"" + reason + "\".", false);
                                         channel.sendMessageEmbeds(embed.build()).queue();
                                         embed.clear();
                                     } else if (msga.endsWith("d")) {
@@ -519,7 +451,7 @@ public class BotCommands extends ListenerAdapter {
                                         String msgt = msga.replace(msga.substring(msga.length()-1), "");
                                         long time = Long.parseLong(msgt);
                                         mentioned.timeoutFor(time, TimeUnit.DAYS).reason(reason).queue();
-                                        embed.addField("User muted", mentioned.getAsMention() + " has been muted for " + time + " days with reason \"" + reason + "\".", false);
+                                        embed.addField("User Muted", mentioned.getAsMention() + " has been muted for " + time + " days with reason \"" + reason + "\".", false);
                                         channel.sendMessageEmbeds(embed.build()).queue();
                                         embed.clear();
                                     } else if (msga.endsWith("w")) {
@@ -527,7 +459,7 @@ public class BotCommands extends ListenerAdapter {
                                         String msgt = msga.replace(msga.substring(msga.length()-1), "");
                                         long time = Long.parseLong(msgt);
                                         mentioned.timeoutFor(time * 7, TimeUnit.DAYS).reason(reason).queue();
-                                        embed.addField("User muted", mentioned.getAsMention() + " has been muted for " + time + " weeks with reason \"" + reason + "\".", false);
+                                        embed.addField("User Muted", mentioned.getAsMention() + " has been muted for " + time + " weeks with reason \"" + reason + "\".", false);
                                         channel.sendMessageEmbeds(embed.build()).queue();
                                         embed.clear();
                                     } else {
@@ -542,35 +474,35 @@ public class BotCommands extends ListenerAdapter {
                                     String msgt = msga.replace(msga.substring(msga.length()-1), "");
                                     long time = Long.parseLong(msgt);
                                     mentioned.timeoutFor(time, TimeUnit.SECONDS).queue();
-                                    embed.addField("User muted", mentioned.getAsMention() + " has been muted for " + time + " seconds.", false);
+                                    embed.addField("User Muted", mentioned.getAsMention() + " has been muted for " + time + " seconds.", false);
                                     channel.sendMessageEmbeds(embed.build()).queue();
                                     embed.clear();
                                 } else if (msga.endsWith("m")) {
                                     String msgt = msga.replace(msga.substring(msga.length()-1), "");
                                     long time = Long.parseLong(msgt);
                                     mentioned.timeoutFor(time, TimeUnit.MINUTES).queue();
-                                    embed.addField("User muted", mentioned.getAsMention() + " has been muted for " + time + " minutes.", false);
+                                    embed.addField("User Muted", mentioned.getAsMention() + " has been muted for " + time + " minutes.", false);
                                     channel.sendMessageEmbeds(embed.build()).queue();
                                     embed.clear();
                                 } else if (msga.endsWith("h")) {
                                     String msgt = msga.replace(msga.substring(msga.length()-1), "");
                                     long time = Long.parseLong(msgt);
                                     mentioned.timeoutFor(time, TimeUnit.HOURS).queue();
-                                    embed.addField("User muted", mentioned.getAsMention() + " has been muted for " + time + " hours.", false);
+                                    embed.addField("User Muted", mentioned.getAsMention() + " has been muted for " + time + " hours.", false);
                                     channel.sendMessageEmbeds(embed.build()).queue();
                                     embed.clear();
                                 } else if (msga.endsWith("d")) {
                                     String msgt = msga.replace(msga.substring(msga.length()-1), "");
                                     long time = Long.parseLong(msgt);
                                     mentioned.timeoutFor(time, TimeUnit.DAYS).queue();
-                                    embed.addField("User muted", mentioned.getAsMention() + " has been muted for " + time + " days.", false);
+                                    embed.addField("User Muted", mentioned.getAsMention() + " has been muted for " + time + " days.", false);
                                     channel.sendMessageEmbeds(embed.build()).queue();
                                     embed.clear();
                                 } else if (msga.endsWith("w")) {
                                     String msgt = msga.replace(msga.substring(msga.length()-1), "");
                                     long time = Long.parseLong(msgt);
                                     mentioned.timeoutFor(time * 7, TimeUnit.DAYS).queue();
-                                    embed.addField("User muted", mentioned.getAsMention() + " has been muted for " + time + " weeks.", false);
+                                    embed.addField("User Muted", mentioned.getAsMention() + " has been muted for " + time + " weeks.", false);
                                     channel.sendMessageEmbeds(embed.build()).queue();
                                     embed.clear();
                                 } else {
@@ -693,5 +625,94 @@ public class BotCommands extends ListenerAdapter {
             }
             //
         }
-    } //add commands above this
+        //unmute
+        if (args[0].equalsIgnoreCase(prefix + "unmute")) {
+            if (member.hasPermission(Permission.MODERATE_MEMBERS)) {
+                if (event.getMessage().getMentionedUsers().toArray().length == 1) {
+                    Member mentioned = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+                    if (mentioned.isTimedOut()) {
+                        mentioned.removeTimeout().queue();
+                        embed.addField("User Unmuted", mentioned.getAsMention() + " has been unmuted.", false);
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                        embed.clear();
+                    } else {
+                        embed.addField("Error!", mentioned.getAsMention() + " is not muted!", false);
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                        embed.clear();
+                    }
+                } else {
+                    embed.addField(prefix + "unmute <@user>", "Unmutes a user.", false);
+                    channel.sendMessageEmbeds(embed.build()).queue();
+                    embed.clear();
+                }
+            } else {
+                embed.addField("Error!", "You do not have mute members permission!", false);
+                channel.sendMessageEmbeds(embed.build()).queue();
+                embed.clear();
+            }
+        }
+
+
+        //add commands above this
+        if (args[0].equalsIgnoreCase(prefix + "commands")) {
+            embed.setTitle("Commands List (Utilities)", null);
+            embed.setDescription("Page 1 of 3");
+
+            embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
+            embed.addField(prefix + "userinfo", "Shows users info.", false);
+            embed.addField(prefix + "serverinfo", "Shows server info.", false);
+            embed.addField(prefix + "ping", "Shows message response time.", false);
+            embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
+            embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
+
+            channel.sendMessageEmbeds(embed.build()).setActionRow(Button.primary("page:2", "Page 2"), Button.primary("page:3", "Page 3")).queue();
+            embed.clear();
+        }
+        } 
+    }
+
+//commands lists
+    public void onButtonInteraction(ButtonInteractionEvent event) {
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setColor(Color.MAGENTA);
+        embed.setFooter("Command executed by " + event.getMember().getUser().getAsTag(), event.getMember().getUser().getAvatarUrl());
+        if (event.getComponentId().equals("page:1")) {
+            embed.setTitle("Commands List (Utilities)", null);
+            embed.setDescription("Page 1 of 3");
+
+            embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
+            embed.addField(prefix + "userinfo", "Shows users info.", false);
+            embed.addField(prefix + "serverinfo", "Shows server info.", false);
+            embed.addField(prefix + "ping", "Shows message response time.", false);
+            embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
+            embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
+
+            event.editMessageEmbeds(embed.build()).setActionRow(Button.primary("page:2", "Page 2"), Button.primary("page:3", "Page 3")).queue();
+        }
+
+        if (event.getComponentId().equals("page:2")) {
+            embed.setTitle("Commands List (Music)", null);
+            embed.setDescription("Page 2 of 3");
+
+            embed.addField(prefix + "play <music url>", "Plays music.", false);
+            embed.addField(prefix + "skip", "Skips currently playing track.", false);
+
+            event.editMessageEmbeds(embed.build()).setActionRow(Button.primary("page:3", "Page 3"), Button.primary("page:1", "Page 1")).queue();
+        }
+
+        if (event.getComponentId().equals("page:3")) {
+            embed.setTitle("Commands List (Moderation)", null);
+            embed.setDescription("Page 3 of 3");
+
+            embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user.", false);
+            embed.addField(prefix + "giverole <@role> <@user>", "Gives a user a role.", false);
+            embed.addField(prefix + "removerole <@role> <@user>", "Removes a role from a user.", false);
+            embed.addField(prefix + "say <some text>", "Sends text.", false);
+            embed.addField(prefix + "reply <some text>", "Replys to replied message.", false);
+            embed.addField(prefix + "edit <some text>", "Edits bot message you reply to.", false);
+            embed.addField(prefix + "delete", "Deletes message you replied to.", false);
+
+            event.editMessageEmbeds(embed.build()).setActionRow(Button.primary("page:1", "Page 1"), Button.primary("page:2", "Page 2")).queue();
+        }
+    }
 }
