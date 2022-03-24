@@ -56,15 +56,13 @@
 !ping
   
 - Shows message response time.
-
-!shutdown
   
-- Shuts down bot.
+!play
+- Plays music.
+  
+!skip
+- Skips currently playing track.
 
 !commands
   
-- Lists page 1 of commands.
-
-!commands2
-  
-- Lists page 2 of commands.
+- Lists page 1 of commands. Use buttons at bottom to change to pages. 
