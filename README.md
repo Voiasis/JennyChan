@@ -22,11 +22,12 @@ What it can do so far:
 - Give roles
 - Remove roles
 - Kick members with optional reason
+- an with optional reason
 - Auto opens threads in #suggetions (for my server)
 
 
 Ideas for future:
-- Ban with optional time and/or reason
+- Add temp ban
 - All commands work with bot mention
 - Interaction commands
 
