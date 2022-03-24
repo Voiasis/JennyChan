@@ -17,15 +17,17 @@ What it can do so far:
 - Reply to messages
 - Edit messages the bot has sent
 - Delete messages
+- Add emojis from emoji or image URL
 - Send text to choosen users DMs
 - Give roles
 - Remove roles
 - Kick members with optional reason
+- an with optional reason
 - Auto opens threads in #suggetions (for my server)
 
 
 Ideas for future:
-- Ban with optional time and/or reason
+- Add temp ban
 - All commands work with bot mention
 - Interaction commands
 
