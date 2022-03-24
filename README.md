@@ -22,7 +22,9 @@ What it can do so far:
 - Give roles
 - Remove roles
 - Kick members with optional reason
-- an with optional reason
+- Ban with optional reason
+- Lock & unlock channels
+- Set channel slowmode
 - Auto opens threads in #suggetions (for my server)
 
 
