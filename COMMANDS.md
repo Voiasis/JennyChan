@@ -48,6 +48,15 @@
 !kick <@user> [<reason>]
   
 - Kicks a user. Reason is optional.
+  
+!slowmode <time>
+- Sets channel slowmode.
+  
+!lock
+- Locks a channel.
+  
+!unlock
+- Unlocks a channel.
 
 !uptime
   
