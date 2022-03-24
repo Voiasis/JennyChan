@@ -17,6 +17,7 @@ What it can do so far:
 - Reply to messages
 - Edit messages the bot has sent
 - Delete messages
+- Add emojis from emoji or image URL
 - Send text to choosen users DMs
 - Give roles
 - Remove roles
