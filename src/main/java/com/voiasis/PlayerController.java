@@ -11,28 +11,27 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import com.voiasis.musicstuff.GuildMusicManager;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.entities.Member;
 
 public class PlayerController extends ListenerAdapter {
   private final AudioPlayerManager playerManager;
   private final Map<Long, GuildMusicManager> musicManagers;
+  
 
   public String prefix = "!"; //bot prefix
 
-  PlayerController() {
+  public PlayerController() {
     this.musicManagers = new HashMap<>();
 
     this.playerManager = new DefaultAudioPlayerManager();
@@ -107,8 +106,7 @@ public class PlayerController extends ListenerAdapter {
             if (args[1].equals(null)) {
             } else {
                 event.getGuild().getAudioManager().openAudioConnection(member.getVoiceState().getChannel());
-                loadAndPlay(event.getTextChannel(), args[1]);
-                embed.setFooter("Command executed by " + event.getAuthor().getName(), event.getAuthor().getAvatarUrl());
+                loadAndPlay(event.getTextChannel(), args[1], event.getMember());
             }
         } catch(Exception ex) {
             embed.addField(prefix + "play <music url>", "Plays music.", false);
@@ -137,18 +135,18 @@ public class PlayerController extends ListenerAdapter {
       
   }
 
-  public void loadAndPlay(final TextChannel channel, final String trackUrl) {
+  public void loadAndPlay(final TextChannel channel, final String trackUrl, final Member member) {
     final GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
-
     playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
       @Override
       public void trackLoaded(AudioTrack track) {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setColor(Color.MAGENTA);
         embed.addField("Added to queue", track.getInfo().title, false);
+        embed.setFooter("Command executed by " + member.getUser().getAsTag(), member.getUser().getAvatarUrl());
         channel.sendMessageEmbeds(embed.build()).queue();
         embed.clear();
-
+        channel.getGuild().getJDA().getPresence().setActivity(Activity.listening(track.getInfo().title));
         play(channel.getGuild(), musicManager, track);
       }
 

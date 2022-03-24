@@ -2,16 +2,22 @@ package com.voiasis;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.awt.Color;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class AutoTasks extends ListenerAdapter {
 
+    public String prefix = "!"; //bot prefix
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event) { 
+        String[] args = event.getMessage().getContentRaw().split(" ");
         if (event.getChannel().getId().equals("927712748488507433")) {
         
             event.getMessage().createThreadChannel("[" + event.getAuthor().getName() + "] Suggestion Discussion").queue();
@@ -65,17 +71,33 @@ public class AutoTasks extends ListenerAdapter {
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-        final List<TextChannel> dontDoThis = event.getGuild().getTextChannelsByName("welcome", true);
-
-        if (dontDoThis.isEmpty()) {
-            return;
-        }
+        final List<TextChannel> dontDoThis = event.getGuild().getTextChannelsByName("joins-leaves", true);
 
         final TextChannel pleaseDontDoThisAtAll = dontDoThis.get(0);
 
-        final String useGuildSpecificSettingsInstead = String.format("Welcome %s to %s",
-                event.getMember().getUser().getAsTag(), event.getGuild().getName());
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setColor(Color.MAGENTA);
 
-        pleaseDontDoThisAtAll.sendMessage(useGuildSpecificSettingsInstead).queue();
+        embed.addField("Welcome!", event.getMember().getUser().getAsTag() + " has joined the server.", false);
+        
+        pleaseDontDoThisAtAll.sendMessageEmbeds(embed.build()).queue();
+        embed.clear();
     }
+
+    @Override
+    public void onGuildMemberRemove(GuildMemberRemoveEvent event) {
+        final List<TextChannel> dontDoThis = event.getGuild().getTextChannelsByName("joins-leaves", true);
+
+        final TextChannel pleaseDontDoThisAtAll = dontDoThis.get(0);
+
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setColor(Color.MAGENTA);
+
+        embed.addField("Goodbye!", event.getMember().getUser().getAsTag() + " has left the server.", false);
+        
+        pleaseDontDoThisAtAll.sendMessageEmbeds(embed.build()).queue();
+        embed.clear();
+    }
+
+    
 }
