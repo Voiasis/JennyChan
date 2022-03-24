@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Icon.IconType;
+import net.dv8tion.jda.api.events.channel.update.ChannelUpdateSlowmodeEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -75,7 +76,7 @@ public class BotCommands extends ListenerAdapter {
                 channel.sendMessageEmbeds(embed.build()).queue();
             }
         }
-        //message TODO
+        //message
         if (args[0].equalsIgnoreCase(prefix + "message")) {
             if (event.getMessage().getMentionedUsers().toArray().length == 1) {
                 if (event.getMessage().getContentRaw().toCharArray().length >= 32) {
@@ -257,9 +258,9 @@ public class BotCommands extends ListenerAdapter {
         //activity
         if (args[0].equalsIgnoreCase(prefix + "act")) {
             if (member.getId().equals("472899069136601099")) {
-                if (event.getMessage().getContentRaw().toCharArray().length >= 8) {
+                if (event.getMessage().getContentRaw().toCharArray().length >= 6) {
                     if (args[1].equalsIgnoreCase("p")) {
-                        String message = event.getMessage().getContentRaw().substring(10);
+                        String message = event.getMessage().getContentRaw().substring(6);
                         event.getJDA().getPresence().setActivity(Activity.playing(message));
                         embed.addField("Activity Changed", "Activity has been set to \"Playing " + message + "\".", false);
                         channel.sendMessageEmbeds(embed.build()).queue(mess -> {
@@ -267,7 +268,7 @@ public class BotCommands extends ListenerAdapter {
                             event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
                         });
                     } else if (args[1].equalsIgnoreCase("w")) {
-                        String message = event.getMessage().getContentRaw().substring(10);
+                        String message = event.getMessage().getContentRaw().substring(6);
                         event.getJDA().getPresence().setActivity(Activity.watching(message));
                         embed.addField("Activity Changed", "Activity has been set to \"Watching " + message + "\".", false);
                         channel.sendMessageEmbeds(embed.build()).queue(messa -> {
@@ -275,7 +276,7 @@ public class BotCommands extends ListenerAdapter {
                             event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
                         });
                     } else if (args[1].equalsIgnoreCase("l")) {
-                        String message = event.getMessage().getContentRaw().substring(10);
+                        String message = event.getMessage().getContentRaw().substring(6);
                         event.getJDA().getPresence().setActivity(Activity.listening(message));
                         embed.addField("Activity Changed", "Activity has been set to \"Listening to " + message + "\".", false);
                         channel.sendMessageEmbeds(embed.build()).queue(messag -> {
@@ -405,11 +406,105 @@ public class BotCommands extends ListenerAdapter {
         }
 //Moderation:
 
+        //NSFW
+        if (args[0].equalsIgnoreCase(prefix + "NSFW")) {
+            if (member.hasPermission(Permission.MANAGE_CHANNEL)) {
+                if (event.getTextChannel().isNSFW()) {
+                    event.getTextChannel().getManager().setNSFW(false).queue();
+                    embed.addField("NSFW Updated", "NSFW has been disabled.", false);
+                    channel.sendMessageEmbeds(embed.build()).queue();
+                } else {
+                    event.getTextChannel().getManager().setNSFW(true).queue();
+                    embed.addField("NSFW Updated", "NSFW has been enabled.", false);
+                    channel.sendMessageEmbeds(embed.build()).queue();
+                }
+            } else {
+                embed.addField("Error!", "You do not have Manage Channel permission!", false);
+                channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                    message.delete().queueAfter(10, TimeUnit.SECONDS);
+                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                });
+            }
+        }
         //lock
-
+        if (args[0].equalsIgnoreCase(prefix + "lock")) {
+            if (member.hasPermission(Permission.MANAGE_CHANNEL)) {
+                event.getTextChannel().getManager().getChannel().putPermissionOverride(event.getGuild().getPublicRole()).setDeny(Permission.MESSAGE_SEND).queue();
+                event.getTextChannel().getManager().setNSFW(true).queue();
+                embed.addField("Lock Updated", "Channel has been locked.", false);
+                channel.sendMessageEmbeds(embed.build()).queue();
+            } else {
+                embed.addField("Error!", "You do not have Manage Channel permission!", false);
+                channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                    message.delete().queueAfter(10, TimeUnit.SECONDS);
+                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                });
+            }
+        }
 
         //unlock
+        if (args[0].equalsIgnoreCase(prefix + "unlock")) {
+            if (member.hasPermission(Permission.MANAGE_CHANNEL)) {
+                event.getTextChannel().getManager().getChannel().putPermissionOverride(event.getGuild().getPublicRole()).clear(Permission.MESSAGE_SEND).queue();
+                event.getTextChannel().getManager().setNSFW(true).queue();
+                embed.addField("Lock Updated", "Channel has been unlocked.", false);
+                channel.sendMessageEmbeds(embed.build()).queue();
+            } else {
+                embed.addField("Error!", "You do not have Manage Channel permission!", false);
+                channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                    message.delete().queueAfter(10, TimeUnit.SECONDS);
+                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                });
+            }
+        }
 
+        //slowmode TODO add time in embed
+        if (args[0].equalsIgnoreCase(prefix + "slowmode")) {
+            if (member.hasPermission(Permission.MANAGE_CHANNEL)) {
+                if (event.getMessage().getContentRaw().toCharArray().length >= 10) {
+                    String msgc = args[1];
+                    if (msgc.endsWith("s")) {
+                        String msgt = msgc.replace("s", "");
+                        int time = Integer.parseInt(msgt);
+                        event.getTextChannel().getManager().setSlowmode(time).queue();
+                        embed.addField("Slowmode Updated", "", false);
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                    } else if (msgc.endsWith("m")) {
+                        String time = msgc.replace("m", "");
+                        int timeSeconds = Integer.parseInt(time);
+                        int minute = timeSeconds * 60;
+                        event.getTextChannel().getManager().setSlowmode(minute).queue();
+                        embed.addField("Slowmode Updated", "", false);
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                    } else if (msgc.endsWith("h")) {
+                        String time = msgc.replace("h", "");
+                        int timeSeconds = Integer.parseInt(time);
+                        int hour = timeSeconds * 3600;
+                        event.getTextChannel().getManager().setSlowmode(hour).queue();
+                        embed.addField("Slowmode Updated", "", false);
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                    } else {
+                        embed.addField("Error!", "You must specify a time with a time unit! (s, m, h)", false);
+                        channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                            message.delete().queueAfter(10, TimeUnit.SECONDS);
+                            event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                        });
+                    }
+                } else {
+                    embed.addField(prefix + "slowmode <time>", "Sets channel slowmode.", false);
+                    channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                        message.delete().queueAfter(10, TimeUnit.SECONDS);
+                        event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                    });
+                } 
+            } else {
+                embed.addField("Error!", "You do not have Manage Channel permission!", false);
+                channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                    message.delete().queueAfter(10, TimeUnit.SECONDS);
+                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                });
+            }
+        }
 
         //steal
         if (args[0].equalsIgnoreCase(prefix + "steal")) {
@@ -447,7 +542,7 @@ public class BotCommands extends ListenerAdapter {
                         }
                     }
                 } else {
-                    embed.addField(prefix + "steal", "Creates a new emoji from emoji or image URL.", false);
+                    embed.addField(prefix + "steal <emoji or image URL>", "Creates a new emoji from emoji or image URL.", false);
                     channel.sendMessageEmbeds(embed.build()).queue(message -> {
                     message.delete().queueAfter(10, TimeUnit.SECONDS);
                     event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
@@ -919,6 +1014,7 @@ public class BotCommands extends ListenerAdapter {
 
             embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
             embed.addField(prefix + "jumbo <emoji>", "Turns an emoji into an image.", false);
+            embed.addField(prefix + "steal <emoji or image URL>", "Creates a new emoji from emoji or image URL.", false);
             embed.addField(prefix + "userinfo", "Shows users info.", false);
             embed.addField(prefix + "serverinfo", "Shows server info.", false);
             embed.addField(prefix + "ping", "Shows message response time.", false);
