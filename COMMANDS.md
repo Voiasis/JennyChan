@@ -5,6 +5,14 @@
 
 - Shows avatar of user.
 
+!jumbo <emoji>
+
+- Turns an emoji into an image.
+  
+!steal <emoji or image URL>
+
+- Creates a new emoji from emoji or image URL.
+
 !userinfo [<@user>]
 
 - Shows users info.
@@ -50,12 +58,15 @@
 - Kicks a user. Reason is optional.
   
 !slowmode <time>
+
 - Sets channel slowmode.
   
 !lock
+
 - Locks a channel.
   
 !unlock
+
 - Unlocks a channel.
 
 !uptime
@@ -67,9 +78,11 @@
 - Shows message response time.
   
 !play
+
 - Plays music.
   
 !skip
+
 - Skips currently playing track.
 
 !commands
