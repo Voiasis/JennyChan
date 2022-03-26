@@ -1,15 +1,18 @@
 package com.voiasis;
 
 import java.awt.Color;
-import java.io.IOException;
+import java.io.File;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.io.FileWriter;
+
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -21,16 +24,16 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.Icon.IconType;
-import net.dv8tion.jda.api.events.channel.update.ChannelUpdateSlowmodeEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class BotCommands extends ListenerAdapter {
     
-    public String prefix = "!"; //bot prefix
+    String prefix = Config.get("PREFIX");
     
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -52,16 +55,44 @@ public class BotCommands extends ListenerAdapter {
       
 //Utilities:
 
-        //verify
+        
+
+        //afk TODO make this better lol
+        if (args[0].equalsIgnoreCase(prefix + "afk")) {
+            try {
+                String afkread = Files.readString(Path.of("E:\\Dev\\JennyChan\\settings\\afk\\" + event.getAuthor().getId() + ".txt"));
+                File afktxt = new File("E:\\Dev\\JennyChan\\settings\\afk\\" + event.getAuthor().getId() + ".txt");
+                afktxt.delete();
+                embed.addField("AFK Disabled", "Removed afk status.", false);
+                channel.sendMessageEmbeds(embed.build()).queue();
+            } catch(Exception ex) {
+                try {
+                    File afktxt = new File("E:\\Dev\\JennyChan\\settings\\afk\\" + event.getAuthor().getId() + ".txt");
+                    afktxt.createNewFile();
+                    FileWriter afkfile = new FileWriter("E:\\Dev\\JennyChan\\settings\\afk\\" + event.getAuthor().getId() + ".txt");
+                    afkfile.write(event.getMessage().getContentRaw());
+                    afkfile.close();
+                    if (event.getMessage().getContentRaw().toCharArray().length >= 5) {
+                        embed.addField("AFK Enabled", "Added afk status of \"" + event.getMessage().getContentRaw().substring(5) + "\".", false);
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                    } else {
+                        embed.addField("AFK enabled", "Added afk status.", false);
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                    }
+                } catch(Exception e) {
+                }
+            }
+        }
+        //verify TODO
         if (args[0].equalsIgnoreCase(prefix + "verify")) {
-           
+           //command to verify people in pojav server maybe
         }
 
         //about TODO
         if (args[0].equalsIgnoreCase(prefix + "about")) {
             //about the bot. why have i still not added anything. pure laziness maybe?
         }
-        //avatar
+        //avatar TODO use user IDs
         if (args[0].equalsIgnoreCase(prefix + "avatar")) {
             if(event.getMessage().getMentionedUsers().toArray().length == 1) {
                 Member mentioned = event.getMessage().getMentionedMembers().get(0);
@@ -76,7 +107,7 @@ public class BotCommands extends ListenerAdapter {
                 channel.sendMessageEmbeds(embed.build()).queue();
             }
         }
-        //message
+        //message TODO use user IDs
         if (args[0].equalsIgnoreCase(prefix + "message")) {
             if (event.getMessage().getMentionedUsers().toArray().length == 1) {
                 if (event.getMessage().getContentRaw().toCharArray().length >= 32) {
@@ -185,6 +216,30 @@ public class BotCommands extends ListenerAdapter {
             //embed.setImage(event.getGuild().getBannerUrl());
 
             channel.sendMessageEmbeds(embed.build()).queue();
+        }
+        //slash command create
+        if (args[0].equalsIgnoreCase(prefix + "create")) {
+            if (member.getId().equals("472899069136601099")) {
+                event.getGuild().updateCommands()
+                .addCommands(Commands
+                .slash("say", "Sends text.")
+                .addOption(OptionType.CHANNEL, "channel", "Choose the channel you'd like to send the message in.", true)
+                .addOption(OptionType.STRING, "text", "Type out what you want the bot to say.", true))
+                .addCommands(Commands
+                .slash("ping", "Shows message response time."))
+                .queue();
+                embed.addField("Commands Added", "", false);
+                channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                    message.delete().queueAfter(10, TimeUnit.SECONDS);
+                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                });
+            } else {
+                embed.addField("Error", "You do not have permission to do that!", false);
+                channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                    message.delete().queueAfter(10, TimeUnit.SECONDS);
+                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                });
+            }
         }
         //shutdown
         if (args[0].equalsIgnoreCase(prefix + "shutdown")) {
@@ -323,30 +378,24 @@ public class BotCommands extends ListenerAdapter {
             embed.addField("JennyChan's Uptime", uptime, false);
             channel.sendMessageEmbeds(embed.build()).queue();
         }
-        //userinfo
+        //userinfo TODO use user IDs
         if (args[0].equalsIgnoreCase(prefix + "userinfo")) {
-
             if (event.getMessage().getMentionedUsers().toArray().length == 1) {
                 Member mentioned = event.getMessage().getMentionedMembers().get(0);
-
                 String jsMonth = Integer.toString(mentioned.getTimeJoined().getMonth().getValue());
                 String jsDay = Integer.toString(mentioned.getTimeJoined().getDayOfMonth());
                 String jsYear = Integer.toString(mentioned.getTimeJoined().getYear());
                 String joinedServer = jsMonth + "/" + jsDay + "/" + jsYear;
-
                 LocalDateTime jsTime = mentioned.getTimeJoined().toLocalDateTime();
                 long jsDiffL = ChronoUnit.DAYS.between(jsTime, now);
                 String jsDiffS = Long.toString(jsDiffL);
-
                 String jdMonth = Integer.toString(mentioned.getTimeCreated().getMonth().getValue());
                 String jdDay = Integer.toString(mentioned.getTimeCreated().getDayOfMonth());
                 String jdYear = Integer.toString(mentioned.getTimeCreated().getYear());
                 String joinedDiscord = jdMonth + "/" + jdDay + "/" + jdYear;
-                
                 LocalDateTime jdTime = mentioned.getTimeCreated().toLocalDateTime();
                 long jdDiffL = ChronoUnit.DAYS.between(jdTime, now);
                 String jdDiffS = Long.toString(jdDiffL);
-                
                 embed.addField(mentioned.getUser().getAsTag(), mentioned.getAsMention(), false);
                 embed.addField("User ID", mentioned.getId(), false);
                 embed.addField("Joined Discord", joinedDiscord + " (" + jdDiffS + " days ago)", false);
@@ -358,20 +407,16 @@ public class BotCommands extends ListenerAdapter {
                 String jsDay = Integer.toString(member.getTimeJoined().getDayOfMonth());
                 String jsYear = Integer.toString(member.getTimeJoined().getYear());
                 String joinedServer = jsMonth + "/" + jsDay + "/" + jsYear;
-
                 LocalDateTime jsTime = member.getTimeJoined().toLocalDateTime();
                 long jsDiffL = ChronoUnit.DAYS.between(jsTime, now);
                 String jsDiffS = Long.toString(jsDiffL);
-
                 String jdMonth = Integer.toString(author.getTimeCreated().getMonth().getValue());
                 String jdDay = Integer.toString(author.getTimeCreated().getDayOfMonth());
                 String jdYear = Integer.toString(author.getTimeCreated().getYear());
                 String joinedDiscord = jdMonth + "/" + jdDay + "/" + jdYear;
-
                 LocalDateTime jdTime = author.getTimeCreated().toLocalDateTime();
                 long jdDiffL = ChronoUnit.DAYS.between(jdTime, now);
                 String jdDiffS = Long.toString(jdDiffL);
-
                 embed.addField(author.getAsTag(), author.getAsMention(), false);
                 embed.addField("User ID", author.getId(), false);
                 embed.addField("Joined Discord", joinedDiscord + " (" + jdDiffS + " days ago)", false);
@@ -556,7 +601,7 @@ public class BotCommands extends ListenerAdapter {
                 });
             }
         }
-        //ban
+        //ban TODO use user IDs
         if (args[0].equalsIgnoreCase(prefix + "ban")) {
             if (member.hasPermission(Permission.BAN_MEMBERS)) {
                 if (event.getMessage().getMentionedUsers().toArray().length == 1) {
@@ -654,7 +699,7 @@ public class BotCommands extends ListenerAdapter {
                 });
             }
         }
-        //giverole
+        //giverole TODO use user IDs
         if (args[0].equalsIgnoreCase(prefix + "giverole")) {
             if (member.hasPermission(Permission.MANAGE_ROLES)) {
                 if (event.getMessage().getMentionedRoles().toArray().length == 1) {
@@ -694,7 +739,7 @@ public class BotCommands extends ListenerAdapter {
                 });
             }
         }
-        //kick
+        //kick TODO use user IDs
         if (args[0].equalsIgnoreCase(prefix + "kick")) {
             if (member.hasPermission(Permission.KICK_MEMBERS)) {
                 if (event.getMessage().getMentionedUsers().toArray().length == 1) {
@@ -725,7 +770,7 @@ public class BotCommands extends ListenerAdapter {
                 });
             }
         }
-        //mute
+        //mute TODO use user IDs
         if (args[0].equalsIgnoreCase(prefix + "mute")) {
             if (member.hasPermission(Permission.MODERATE_MEMBERS)) {
                 if (event.getMessage().getMentionedUsers().toArray().length == 1) {
@@ -843,7 +888,7 @@ public class BotCommands extends ListenerAdapter {
                 });
             }
         }
-        //removerole
+        //removerole TODO use user IDs
         if (args[0].equalsIgnoreCase(prefix + "removerole")) {
             if (member.hasPermission(Permission.MANAGE_ROLES)) {
                 if (event.getMessage().getMentionedRoles().toArray().length == 1) {
@@ -883,7 +928,7 @@ public class BotCommands extends ListenerAdapter {
                 });
             }
         }
-        //reply
+        //reply 
         if (args[0].equalsIgnoreCase(prefix + "reply")) {
             if (member.hasPermission(Permission.MESSAGE_MANAGE)) {
                 try {
@@ -952,7 +997,7 @@ public class BotCommands extends ListenerAdapter {
             }
             //
         }
-        //unmute
+        //unmute TODO use user IDs
         if (args[0].equalsIgnoreCase(prefix + "unmute")) {
             if (member.hasPermission(Permission.MODERATE_MEMBERS)) {
                 if (event.getMessage().getMentionedUsers().toArray().length == 1) {
@@ -986,7 +1031,9 @@ public class BotCommands extends ListenerAdapter {
 
 
         //add commands above this
-        if (args[0].equalsIgnoreCase(prefix + "commands")) {
+        if (!args[0].equalsIgnoreCase(prefix + "commands") && !args[0].equalsIgnoreCase(prefix + "help")) {
+            
+        } else {
             embed.setTitle("Commands List (Utilities)", null);
             embed.setDescription("Page 1 of 3");
 
@@ -998,7 +1045,7 @@ public class BotCommands extends ListenerAdapter {
             embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
             embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
 
-            channel.sendMessageEmbeds(embed.build()).setActionRow(Button.primary("page:2", "Page 2"), Button.primary("page:3", "Page 3")).queue();
+            channel.sendMessageEmbeds(embed.build()).setActionRow(Button.primary("page:2", "Page 2"), Button.primary("page:3", "Page 3"), Button.danger("close", "Close")).queue();
         }
         } 
     }
@@ -1021,17 +1068,19 @@ public class BotCommands extends ListenerAdapter {
             embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
             embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
 
-            event.editMessageEmbeds(embed.build()).setActionRow(Button.primary("page:2", "Page 2"), Button.primary("page:3", "Page 3")).queue();
+            event.editMessageEmbeds(embed.build()).setActionRow(Button.primary("page:2", "Page 2"), Button.primary("page:3", "Page 3"), Button.danger("close", "Close")).queue();
         }
 
         if (event.getComponentId().equals("page:2")) {
             embed.setTitle("Commands List (Music)", null);
             embed.setDescription("Page 2 of 3");
 
+            embed.addField(prefix + "join", "Joins voice channel.", false);
+            embed.addField(prefix + "leave", "Leaves voice channel.", false);
             embed.addField(prefix + "play <music url>", "Plays music.", false);
             embed.addField(prefix + "skip", "Skips currently playing track.", false);
 
-            event.editMessageEmbeds(embed.build()).setActionRow(Button.primary("page:3", "Page 3"), Button.primary("page:1", "Page 1")).queue();
+            event.editMessageEmbeds(embed.build()).setActionRow(Button.primary("page:3", "Page 3"), Button.primary("page:1", "Page 1"), Button.danger("close", "Close")).queue();
         }
 
         if (event.getComponentId().equals("page:3")) {
@@ -1039,14 +1088,21 @@ public class BotCommands extends ListenerAdapter {
             embed.setDescription("Page 3 of 3");
 
             embed.addField(prefix + "kick <@user> [<reason>]", "Kicks a user.", false);
+            embed.addField(prefix + "ban <@user> [<reason>]", "Bans a user.", false);
             embed.addField(prefix + "giverole <@role> <@user>", "Gives a user a role.", false);
             embed.addField(prefix + "removerole <@role> <@user>", "Removes a role from a user.", false);
             embed.addField(prefix + "say <some text>", "Sends text.", false);
             embed.addField(prefix + "reply <some text>", "Replys to replied message.", false);
             embed.addField(prefix + "edit <some text>", "Edits bot message you reply to.", false);
             embed.addField(prefix + "delete", "Deletes message you replied to.", false);
+            embed.addField(prefix + "slowmode <time>", "Sets channel slowmode.", false);
+            embed.addField(prefix + "lock", "Locks a channel.", false);
+            embed.addField(prefix + "unlock", "Unlocks a channel.", false);
 
-            event.editMessageEmbeds(embed.build()).setActionRow(Button.primary("page:1", "Page 1"), Button.primary("page:2", "Page 2")).queue();
+            event.editMessageEmbeds(embed.build()).setActionRow(Button.primary("page:1", "Page 1"), Button.primary("page:2", "Page 2"), Button.danger("close", "Close")).queue();
+        }
+        if (event.getComponentId().equals("close")) {
+            event.getMessage().delete().queue();
         }
     }
 }

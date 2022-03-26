@@ -29,7 +29,7 @@ public class PlayerController extends ListenerAdapter {
   private final Map<Long, GuildMusicManager> musicManagers;
   
 
-  public String prefix = "!"; //bot prefix
+  String prefix = Config.get("PREFIX");
 
   public PlayerController() {
     this.musicManagers = new HashMap<>();
