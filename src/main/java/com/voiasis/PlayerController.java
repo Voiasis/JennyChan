@@ -146,7 +146,6 @@ public class PlayerController extends ListenerAdapter {
         embed.setFooter("Command executed by " + member.getUser().getAsTag(), member.getUser().getAvatarUrl());
         channel.sendMessageEmbeds(embed.build()).queue();
         embed.clear();
-        channel.getGuild().getJDA().getPresence().setActivity(Activity.listening(track.getInfo().title));
         play(channel.getGuild(), musicManager, track);
       }
 

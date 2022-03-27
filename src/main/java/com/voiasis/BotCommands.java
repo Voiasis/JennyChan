@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.io.FileWriter;
 
@@ -52,181 +53,26 @@ public class BotCommands extends ListenerAdapter {
         if (author.isBot()) {
             //
         } else {
-      
-//Utilities:
 
-        
+//my commands
 
-        //afk TODO make this better lol
-        if (args[0].equalsIgnoreCase(prefix + "afk")) {
-            try {
-                String afkread = Files.readString(Path.of("E:\\Dev\\JennyChan\\settings\\afk\\" + event.getAuthor().getId() + ".txt"));
-                File afktxt = new File("E:\\Dev\\JennyChan\\settings\\afk\\" + event.getAuthor().getId() + ".txt");
-                afktxt.delete();
-                embed.addField("AFK Disabled", "Removed afk status.", false);
-                channel.sendMessageEmbeds(embed.build()).queue();
-            } catch(Exception ex) {
-                try {
-                    File afktxt = new File("E:\\Dev\\JennyChan\\settings\\afk\\" + event.getAuthor().getId() + ".txt");
-                    afktxt.createNewFile();
-                    FileWriter afkfile = new FileWriter("E:\\Dev\\JennyChan\\settings\\afk\\" + event.getAuthor().getId() + ".txt");
-                    afkfile.write(event.getMessage().getContentRaw());
-                    afkfile.close();
-                    if (event.getMessage().getContentRaw().toCharArray().length >= 5) {
-                        embed.addField("AFK Enabled", "Added afk status of \"" + event.getMessage().getContentRaw().substring(5) + "\".", false);
-                        channel.sendMessageEmbeds(embed.build()).queue();
-                    } else {
-                        embed.addField("AFK enabled", "Added afk status.", false);
-                        channel.sendMessageEmbeds(embed.build()).queue();
-                    }
-                } catch(Exception e) {
-                }
-            }
-        }
-        //verify TODO
-        if (args[0].equalsIgnoreCase(prefix + "verify")) {
-           //command to verify people in pojav server maybe
-        }
-
-        //about TODO
-        if (args[0].equalsIgnoreCase(prefix + "about")) {
-            //about the bot. why have i still not added anything. pure laziness maybe?
-        }
-        //avatar TODO use user IDs
-        if (args[0].equalsIgnoreCase(prefix + "avatar")) {
-            if(event.getMessage().getMentionedUsers().toArray().length == 1) {
-                Member mentioned = event.getMessage().getMentionedMembers().get(0);
-                embed.setTitle("Image Link", mentioned.getUser().getAvatarUrl() + "?size=1024");
-                embed.setDescription("Avatar of " + mentioned.getUser().getAsMention() + ".");
-                embed.setImage(mentioned.getUser().getAvatarUrl() + "?size=1024");
-                channel.sendMessageEmbeds(embed.build()).queue();
-            } else {
-                embed.setTitle("Image Link", author.getAvatarUrl() + "?size=1024");
-                embed.setDescription("Avatar of " + author.getAsMention() + ".");
-                embed.setImage(author.getAvatarUrl() + "?size=1024");
-                channel.sendMessageEmbeds(embed.build()).queue();
-            }
-        }
-        //message TODO use user IDs
-        if (args[0].equalsIgnoreCase(prefix + "message")) {
-            if (event.getMessage().getMentionedUsers().toArray().length == 1) {
-                if (event.getMessage().getContentRaw().toCharArray().length >= 32) {
-                    String msg = event.getMessage().getContentRaw().substring(32);
-                    member.getUser().openPrivateChannel().queue((ch) -> {
-                        ch.sendMessage(msg).queue();
-                    });
-                } else {
-                    embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
-                    channel.sendMessageEmbeds(embed.build()).queue(message -> {
-                        message.delete().queueAfter(10, TimeUnit.SECONDS);
-                        event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
-                    });
-                }
-            } else {
-                embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
-                channel.sendMessageEmbeds(embed.build()).queue(message -> {
-                    message.delete().queueAfter(10, TimeUnit.SECONDS);
-                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
-                });
-            }
-        }
-        //ping
-        if (args[0].equalsIgnoreCase(prefix + "ping")) {
-            long gw = event.getJDA().getGatewayPing();
-            String gwp = Long.toString(gw);
-            embed.setTitle("Pong!", null);
-            embed.setDescription("Ping: ... \nWebsocket: ...");
-            channel.sendMessageEmbeds(embed.build()).queue(message -> {
-                long ping = event.getMessage().getTimeCreated().until(message.getTimeCreated(), ChronoUnit.MILLIS);
-                embed.setTitle("Pong!", null);
-                embed.setDescription("Ping: " + ping + " ms\nWebsocket: " + gwp + " ms");
-                embed.setColor(Color.MAGENTA);
-                embed.setFooter("Command executed by " + event.getAuthor().getAsTag(), event.getAuthor().getAvatarUrl());
-                message.editMessageEmbeds(embed.build()).queue();
-            });
-        }
-        //react
-        if (args[0].equalsIgnoreCase(prefix + "react")) {
-            try {
-                if (event.getMessage().getContentRaw().toCharArray().length >= 7) {
-                    String content = event.getMessage().getContentRaw().substring(7);
-                    if (content.startsWith("<")) {
-                        String emoji1 = event.getMessage().getContentRaw().substring(9);
-                        String emoji2 = emoji1.replaceFirst(">","");
-                        Message msg = event.getMessage().getMessageReference().getMessage();
-                        msg.addReaction(emoji2).queue();
-                        event.getMessage().delete().queue();
-                    } else {
-                        embed.addField("Error!", "That is not an emoji!", false);
-                        channel.sendMessageEmbeds(embed.build()).queue(message -> {
-                            message.delete().queueAfter(10, TimeUnit.SECONDS);
-                            event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
-                        });
-                    }
-                } else {
-                    embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
-                    channel.sendMessageEmbeds(embed.build()).queue(message -> {
-                        message.delete().queueAfter(10, TimeUnit.SECONDS);
-                        event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
-                    });
-                }
-            } catch(Exception ex) {
-                embed.addField("Error!", "You must reply to a message!", false);
-                channel.sendMessageEmbeds(embed.build()).queue(message -> {
-                    message.delete().queueAfter(10, TimeUnit.SECONDS);
-                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
-                });
-            }
-        }
-        //serverinfo TODO
-        if (args[0].equalsIgnoreCase(prefix + "serverinfo")) {
-            String members = Integer.toString(event.getGuild().getMemberCount());
-            String month = Integer.toString(event.getGuild().getTimeCreated().getMonthValue());
-            String day = Integer.toString(event.getGuild().getTimeCreated().getDayOfMonth());
-            String year = Integer.toString(event.getGuild().getTimeCreated().getYear());
-            String creation = month + "/" + day + "/" + year;
-            String owner = event.getGuild().getOwner().getAsMention();
-            String boosts = Integer.toString(event.getGuild().getBoostCount());
-            String online = Long.toString(event.getGuild().getMembers().stream().filter(u -> u.getOnlineStatus() == OnlineStatus.ONLINE).count());
-            String bots = Long.toString(event.getGuild().getMembers().stream().filter(m -> m.getUser().isBot()).count());
-            String text = Long.toString(event.getGuild().getTextChannelCache().size());
-            String voice = Long.toString(event.getGuild().getVoiceChannelCache().size());
-            String roles = Long.toString(event.getGuild().getRoleCache().size());
-            String categories = Long.toString(event.getGuild().getCategoryCache().size());
-            String emojis = Long.toString(event.getGuild().getEmoteCache().size());
-            String threads = Long.toString(event.getGuild().getThreadChannelCache().size());
-            
-            
-
-            
-
-            embed.setTitle(event.getGuild().getName(), null);
-            embed.setThumbnail(event.getGuild().getIconUrl() + "?size=1024");
-            //embed.addField("Description", event.getGuild().getDescription(), false);
-            embed.addField("Owner", owner, true).addField("Created", creation, true).addField("Server ID", event.getGuild().getId(), true);
-            embed.addField("Online Members", online + " (broken)", true).addField("Total Members", members, true).addField("Bot Count", bots, true);
-            embed.addField("Channels (text)", text, true).addField("Channels (voice)", voice, true).addField("Channels (thread)", threads, true);
-            embed.addField("Categories", categories, true).addField("Roles", roles, true).addField("Emojis", emojis, true);
-            //embed.addField("Voice Region", , false);
-            //embed.addField("Ban Count", event., false);
-            //embed.addField("Boosts", boosts, false);
-            
-
-            //embed.addField("Banner", "", false);
-            //embed.setImage(event.getGuild().getBannerUrl());
-
-            channel.sendMessageEmbeds(embed.build()).queue();
-        }
-        //slash command create
+            //slash command create
         if (args[0].equalsIgnoreCase(prefix + "create")) {
             if (member.getId().equals("472899069136601099")) {
                 event.getGuild().updateCommands()
-                .addCommands(Commands
-                .slash("say", "Sends text.")
-                .addOption(OptionType.CHANNEL, "channel", "Choose the channel you'd like to send the message in.", true)
-                .addOption(OptionType.STRING, "text", "Type out what you want the bot to say.", true))
-                .addCommands(Commands
-                .slash("ping", "Shows message response time."))
+                .addCommands(Commands.slash("say", "Sends text.").addOption(OptionType.CHANNEL, "channel", "Choose the channel you'd like to send the message in.", true).addOption(OptionType.STRING, "text", "Type out what you want the bot to say.", true))
+                .addCommands(Commands.slash("ping", "Shows message response time."))
+                .addCommands(Commands.slash("afk", "Sets your AFK status.").addOption(OptionType.STRING, "message", "AFK status message.", false))
+                .addCommands(Commands.slash("avatar", "Shows avatar of user.").addOption(OptionType.BOOLEAN, "hidden", "Have the command show as hidden?", true).addOption(OptionType.USER, "user", "Get avatar from user.", false))
+                .addCommands(Commands.slash("uptime", "Shows bots uptime."))
+                .addCommands(Commands.slash("userinfo", "Shows users info.").addOption(OptionType.BOOLEAN, "hidden", "Have the command show as hidden?", true).addOption(OptionType.USER, "user", "Set a user you want info on.", false))
+                //moderation
+                .addCommands(Commands.slash("steal", "Creates a new emoji from emoji or image URL.").addOption(OptionType.STRING, "name", "Name of the emoji.", true).addOption(OptionType.STRING, "link", "Emoji image link.", true))
+                .addCommands(Commands.slash("lock", "Locks a channel."))
+                .addCommands(Commands.slash("unlock", "Unlocks a channel."))
+                .addCommands(Commands.slash("nsfw", "Toggles channel NSFW."))
+                .addCommands(Commands.slash("purge", "Deletes given amount of messages in the channel.").addOption(OptionType.INTEGER, "amount", "Enter an amount of messages to delete.", true))
+
                 .queue();
                 embed.addField("Commands Added", "", false);
                 channel.sendMessageEmbeds(embed.build()).queue(message -> {
@@ -240,6 +86,38 @@ public class BotCommands extends ListenerAdapter {
                     event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
                 });
             }
+        }
+        //message TODO use user IDs
+        if (args[0].equalsIgnoreCase(prefix + "message")) {
+            if (member.getId().equals("472899069136601099")) {
+                if (event.getMessage().getMentionedUsers().toArray().length == 1) {
+                    if (event.getMessage().getContentRaw().toCharArray().length >= 32) {
+                        String msg = event.getMessage().getContentRaw().substring(32);
+                        event.getMessage().getMentionedUsers().get(0).openPrivateChannel().queue((ch) -> {
+                            ch.sendMessage(msg).queue();
+                        });
+                    } else {
+                        embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
+                        channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                            message.delete().queueAfter(10, TimeUnit.SECONDS);
+                            event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                        });
+                    }
+                } else {
+                    embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
+                    channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                        message.delete().queueAfter(10, TimeUnit.SECONDS);
+                        event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                    });
+                }
+            } else {
+                embed.addField("Error", "You do not have permission to do that!", false);
+                channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                    message.delete().queueAfter(10, TimeUnit.SECONDS);
+                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                });
+            }
+            
         }
         //shutdown
         if (args[0].equalsIgnoreCase(prefix + "shutdown")) {
@@ -366,6 +244,159 @@ public class BotCommands extends ListenerAdapter {
                 });
             }
         }
+      
+//Utilities:
+
+        
+
+        //afk TODO make this better lol
+        if (args[0].equalsIgnoreCase(prefix + "afk")) {
+            try {
+                String afkread = Files.readString(Path.of("E:\\Dev\\JennyChan\\settings\\afk\\" + event.getAuthor().getId() + ".txt"));
+                File afktxt = new File("E:\\Dev\\JennyChan\\settings\\afk\\" + event.getAuthor().getId() + ".txt");
+                afktxt.delete();
+                embed.addField("AFK Disabled", "Removed afk status.", false);
+                channel.sendMessageEmbeds(embed.build()).queue();
+            } catch(Exception ex) {
+                try {
+                    File afktxt = new File("E:\\Dev\\JennyChan\\settings\\afk\\" + event.getAuthor().getId() + ".txt");
+                    afktxt.createNewFile();
+                    FileWriter afkfile = new FileWriter("E:\\Dev\\JennyChan\\settings\\afk\\" + event.getAuthor().getId() + ".txt");
+                    afkfile.write(event.getMessage().getContentRaw());
+                    afkfile.close();
+                    if (event.getMessage().getContentRaw().toCharArray().length >= 5) {
+                        embed.addField("AFK Enabled", "Added afk status of \"" + event.getMessage().getContentRaw().substring(5) + "\".", false);
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                    } else {
+                        embed.addField("AFK enabled", "Added afk status.", false);
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                    }
+                } catch(Exception e) {
+                }
+            }
+        }
+        //verify TODO
+        if (args[0].equalsIgnoreCase(prefix + "verify")) {
+           //command to verify people in pojav server maybe
+        }
+
+        //about TODO
+        if (args[0].equalsIgnoreCase(prefix + "about")) {
+            //about the bot. why have i still not added anything. pure laziness maybe?
+        }
+        //avatar TODO use user IDs
+        if (args[0].equalsIgnoreCase(prefix + "avatar")) {
+            if(event.getMessage().getMentionedUsers().toArray().length == 1) {
+                Member mentioned = event.getMessage().getMentionedMembers().get(0);
+                embed.setTitle("Image Link", mentioned.getUser().getAvatarUrl() + "?size=1024");
+                embed.setDescription("Avatar of " + mentioned.getUser().getAsMention() + ".");
+                embed.setImage(mentioned.getUser().getAvatarUrl() + "?size=1024");
+                channel.sendMessageEmbeds(embed.build()).queue();
+            } else {
+                embed.setTitle("Image Link", author.getAvatarUrl() + "?size=1024");
+                embed.setDescription("Avatar of " + author.getAsMention() + ".");
+                embed.setImage(author.getAvatarUrl() + "?size=1024");
+                channel.sendMessageEmbeds(embed.build()).queue();
+            }
+        }
+        
+        //ping
+        if (args[0].equalsIgnoreCase(prefix + "ping")) {
+            long gw = event.getJDA().getGatewayPing();
+            String gwp = Long.toString(gw);
+            embed.setTitle("Pong!", null);
+            embed.setDescription("Ping: ... \nWebsocket: ...");
+            channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                long ping = event.getMessage().getTimeCreated().until(message.getTimeCreated(), ChronoUnit.MILLIS);
+                embed.setTitle("Pong!", null);
+                embed.setDescription("Ping: " + ping + " ms\nWebsocket: " + gwp + " ms");
+                embed.setColor(Color.MAGENTA);
+                embed.setFooter("Command executed by " + event.getAuthor().getAsTag(), event.getAuthor().getAvatarUrl());
+                message.editMessageEmbeds(embed.build()).queue();
+            });
+        }
+        //react
+        if (args[0].equalsIgnoreCase(prefix + "react")) {
+            try {
+                if (event.getMessage().getContentRaw().toCharArray().length >= 7) {
+                    String content = event.getMessage().getContentRaw().substring(7);
+                    String emojiID = args[1];
+                    if (content.startsWith("<")) {
+                        String emoji1 = event.getMessage().getContentRaw().substring(9);
+                        String emoji2 = emoji1.replaceFirst(">","");
+                        Message msg = event.getMessage().getMessageReference().getMessage();
+                        msg.addReaction(emoji2).queue();
+                        event.getMessage().delete().queue();
+                    } else {
+                        try {
+                            Double.parseDouble(emojiID);
+                            if (!emojiID.isBlank()) {
+                                Message msg = event.getMessage().getMessageReference().getMessage();
+                                msg.addReaction(event.getJDA().getEmoteById(emojiID)).queue();
+                                event.getMessage().delete().queue();
+                            }
+                        } catch(Exception ex) {
+                            embed.addField("Error!", "That is not an emoji!", false);
+                                channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                                message.delete().queueAfter(10, TimeUnit.SECONDS);
+                                event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                            });
+                        }
+                    }
+                } else {
+                    embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
+                    channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                        message.delete().queueAfter(10, TimeUnit.SECONDS);
+                        event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                    });
+                }
+            } catch(Exception ex) {
+                embed.addField("Error!", "You must reply to a message!", false);
+                channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                    message.delete().queueAfter(10, TimeUnit.SECONDS);
+                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                });
+            }
+        }
+        //serverinfo TODO
+        if (args[0].equalsIgnoreCase(prefix + "serverinfo")) {
+            String members = Integer.toString(event.getGuild().getMemberCount());
+            String month = Integer.toString(event.getGuild().getTimeCreated().getMonthValue());
+            String day = Integer.toString(event.getGuild().getTimeCreated().getDayOfMonth());
+            String year = Integer.toString(event.getGuild().getTimeCreated().getYear());
+            String creation = month + "/" + day + "/" + year;
+            String owner = event.getGuild().getOwner().getAsMention();
+            String boosts = Integer.toString(event.getGuild().getBoostCount());
+            String online = Long.toString(event.getGuild().getMembers().stream().filter(u -> u.getOnlineStatus() == OnlineStatus.ONLINE).count());
+            String bots = Long.toString(event.getGuild().getMembers().stream().filter(m -> m.getUser().isBot()).count());
+            String text = Long.toString(event.getGuild().getTextChannelCache().size());
+            String voice = Long.toString(event.getGuild().getVoiceChannelCache().size());
+            String roles = Long.toString(event.getGuild().getRoleCache().size());
+            String categories = Long.toString(event.getGuild().getCategoryCache().size());
+            String emojis = Long.toString(event.getGuild().getEmoteCache().size());
+            String threads = Long.toString(event.getGuild().getThreadChannelCache().size());
+            
+            
+
+            
+
+            embed.setTitle(event.getGuild().getName(), null);
+            embed.setThumbnail(event.getGuild().getIconUrl() + "?size=1024");
+            //embed.addField("Description", event.getGuild().getDescription(), false);
+            embed.addField("Owner", owner, true).addField("Created", creation, true).addField("Server ID", event.getGuild().getId(), true);
+            embed.addField("Online Members", online + " (broken)", true).addField("Total Members", members, true).addField("Bot Count", bots, true);
+            embed.addField("Channels (text)", text, true).addField("Channels (voice)", voice, true).addField("Channels (thread)", threads, true);
+            embed.addField("Categories", categories, true).addField("Roles", roles, true).addField("Emojis", emojis, true);
+            //embed.addField("Voice Region", , false);
+            //embed.addField("Ban Count", event., false);
+            //embed.addField("Boosts", boosts, false);
+            
+
+            //embed.addField("Banner", "", false);
+            //embed.setImage(event.getGuild().getBannerUrl());
+
+            channel.sendMessageEmbeds(embed.build()).queue();
+        }
         //uptime
         if (args[0].equalsIgnoreCase(prefix + "uptime")) {
             RuntimeMXBean rb = ManagementFactory.getRuntimeMXBean();
@@ -451,6 +482,34 @@ public class BotCommands extends ListenerAdapter {
         }
 //Moderation:
 
+        //purge
+        if (args[0].equalsIgnoreCase(prefix + "purge")) {
+            if (member.hasPermission(Permission.MESSAGE_MANAGE)) {
+                if (event.getMessage().getContentRaw().toCharArray().length >= 8) {
+                    try {
+                        int values = Integer.parseInt(args[1]);
+                        event.getMessage().delete();
+                        List<Message> messages = event.getChannel().getHistory().retrievePast(values).complete();
+                        event.getTextChannel().deleteMessages(messages).queue();
+                    } catch (Exception ex) {
+                        embed.addField("Error!", "Invalid amount given!", false);
+                        channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                            message.delete().queueAfter(10, TimeUnit.SECONDS);
+                            event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                        });
+                    } 
+                } else {
+                    embed.addField(prefix + "purge <value>", "Deletes given amount of messages in the channel.", false);
+                    channel.sendMessageEmbeds(embed.build()).queue();
+                }
+            } else {
+                embed.addField("Error!", "You do not have manage messages permission!", false);
+                channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                    message.delete().queueAfter(10, TimeUnit.SECONDS);
+                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                });
+            }
+        }
         //NSFW
         if (args[0].equalsIgnoreCase(prefix + "NSFW")) {
             if (member.hasPermission(Permission.MANAGE_CHANNEL)) {
@@ -475,7 +534,6 @@ public class BotCommands extends ListenerAdapter {
         if (args[0].equalsIgnoreCase(prefix + "lock")) {
             if (member.hasPermission(Permission.MANAGE_CHANNEL)) {
                 event.getTextChannel().getManager().getChannel().putPermissionOverride(event.getGuild().getPublicRole()).setDeny(Permission.MESSAGE_SEND).queue();
-                event.getTextChannel().getManager().setNSFW(true).queue();
                 embed.addField("Lock Updated", "Channel has been locked.", false);
                 channel.sendMessageEmbeds(embed.build()).queue();
             } else {
@@ -491,7 +549,6 @@ public class BotCommands extends ListenerAdapter {
         if (args[0].equalsIgnoreCase(prefix + "unlock")) {
             if (member.hasPermission(Permission.MANAGE_CHANNEL)) {
                 event.getTextChannel().getManager().getChannel().putPermissionOverride(event.getGuild().getPublicRole()).clear(Permission.MESSAGE_SEND).queue();
-                event.getTextChannel().getManager().setNSFW(true).queue();
                 embed.addField("Lock Updated", "Channel has been unlocked.", false);
                 channel.sendMessageEmbeds(embed.build()).queue();
             } else {
@@ -677,14 +734,14 @@ public class BotCommands extends ListenerAdapter {
                                 });
                             }
                         }
-                    } catch(Exception ex) {
+                    } catch (Exception ex) {
                         embed.addField("Error!", "You must reply to one of my messages!", false);
                         channel.sendMessageEmbeds(embed.build()).queue(message -> {
                             message.delete().queueAfter(10, TimeUnit.SECONDS);
                             event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
                         });
                     }
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     embed.addField(prefix + "edit <some text>", "Edits one of my messages.", false);
                     channel.sendMessageEmbeds(embed.build()).queue(message -> {
                         message.delete().queueAfter(10, TimeUnit.SECONDS);
@@ -1042,8 +1099,9 @@ public class BotCommands extends ListenerAdapter {
             embed.addField(prefix + "userinfo", "Shows users info.", false);
             embed.addField(prefix + "serverinfo", "Shows server info.", false);
             embed.addField(prefix + "ping", "Shows message response time.", false);
-            embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
             embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
+            embed.addField(prefix + "afk [<message>]", "Sets your AFK status.", false);
+            embed.addField(prefix + "uptime", "Shows bots uptime.", false);
 
             channel.sendMessageEmbeds(embed.build()).setActionRow(Button.primary("page:2", "Page 2"), Button.primary("page:3", "Page 3"), Button.danger("close", "Close")).queue();
         }
@@ -1061,12 +1119,12 @@ public class BotCommands extends ListenerAdapter {
 
             embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
             embed.addField(prefix + "jumbo <emoji>", "Turns an emoji into an image.", false);
-            embed.addField(prefix + "steal <emoji or image URL>", "Creates a new emoji from emoji or image URL.", false);
             embed.addField(prefix + "userinfo", "Shows users info.", false);
             embed.addField(prefix + "serverinfo", "Shows server info.", false);
             embed.addField(prefix + "ping", "Shows message response time.", false);
-            embed.addField(prefix + "message <@user> <some text>", "Sends user a message.", false);
             embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
+            embed.addField(prefix + "afk [<message>]", "Sets your AFK status.", false);
+            embed.addField(prefix + "uptime", "Shows bots uptime.", false);
 
             event.editMessageEmbeds(embed.build()).setActionRow(Button.primary("page:2", "Page 2"), Button.primary("page:3", "Page 3"), Button.danger("close", "Close")).queue();
         }
@@ -1098,6 +1156,8 @@ public class BotCommands extends ListenerAdapter {
             embed.addField(prefix + "slowmode <time>", "Sets channel slowmode.", false);
             embed.addField(prefix + "lock", "Locks a channel.", false);
             embed.addField(prefix + "unlock", "Unlocks a channel.", false);
+            embed.addField(prefix + "purge <value>", "Deletes given amount of messages in the channel.", false);
+            embed.addField(prefix + "steal <emoji or image URL>", "Creates a new emoji from emoji or image URL.", false);
 
             event.editMessageEmbeds(embed.build()).setActionRow(Button.primary("page:1", "Page 1"), Button.primary("page:2", "Page 2"), Button.danger("close", "Close")).queue();
         }
