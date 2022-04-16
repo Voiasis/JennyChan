@@ -1,7 +1,17 @@
 package com.voiasis;
 
-import java.awt.Color;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+
+import java.awt.*;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -12,25 +22,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.io.FileWriter;
 
-
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import static com.voiasis.handler.CommandsList.registerCommands;
 
 public class BotCommands extends ListenerAdapter {
     
@@ -48,7 +41,7 @@ public class BotCommands extends ListenerAdapter {
         final MessageChannel channel = event.getChannel();
         final Member self = event.getGuild().getSelfMember();
 
-        LocalDateTime now = LocalDateTime.now();;
+        LocalDateTime now = LocalDateTime.now();
 
         if (author.isBot()) {
             //
@@ -59,21 +52,7 @@ public class BotCommands extends ListenerAdapter {
             //slash command create
         if (args[0].equalsIgnoreCase(prefix + "create")) {
             if (member.getId().equals("472899069136601099")) {
-                event.getGuild().updateCommands()
-                .addCommands(Commands.slash("say", "Sends text.").addOption(OptionType.CHANNEL, "channel", "Choose the channel you'd like to send the message in.", true).addOption(OptionType.STRING, "text", "Type out what you want the bot to say.", true))
-                .addCommands(Commands.slash("ping", "Shows message response time."))
-                .addCommands(Commands.slash("afk", "Sets your AFK status.").addOption(OptionType.STRING, "message", "AFK status message.", false))
-                .addCommands(Commands.slash("avatar", "Shows avatar of user.").addOption(OptionType.BOOLEAN, "hidden", "Have the command show as hidden?", true).addOption(OptionType.USER, "user", "Get avatar from user.", false))
-                .addCommands(Commands.slash("uptime", "Shows bots uptime."))
-                .addCommands(Commands.slash("userinfo", "Shows users info.").addOption(OptionType.BOOLEAN, "hidden", "Have the command show as hidden?", true).addOption(OptionType.USER, "user", "Set a user you want info on.", false))
-                //moderation
-                .addCommands(Commands.slash("steal", "Creates a new emoji from emoji or image URL.").addOption(OptionType.STRING, "name", "Name of the emoji.", true).addOption(OptionType.STRING, "link", "Emoji image link.", true))
-                .addCommands(Commands.slash("lock", "Locks a channel."))
-                .addCommands(Commands.slash("unlock", "Unlocks a channel."))
-                .addCommands(Commands.slash("nsfw", "Toggles channel NSFW."))
-                .addCommands(Commands.slash("purge", "Deletes given amount of messages in the channel.").addOption(OptionType.INTEGER, "amount", "Enter an amount of messages to delete.", true))
-
-                .queue();
+                registerCommands(event.getJDA(), event.getGuild().getId());
                 embed.addField("Commands Added", "", false);
                 channel.sendMessageEmbeds(embed.build()).queue(message -> {
                     message.delete().queueAfter(10, TimeUnit.SECONDS);
