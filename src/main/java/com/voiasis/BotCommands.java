@@ -495,9 +495,8 @@ public class BotCommands extends ListenerAdapter {
                 });
             }
         }
-        //reddit //TODO finish this
+        //reddit
         if (args[0].equalsIgnoreCase(prefix + "reddit")) {
-            if (event.getTextChannel().isNSFW()) {
                 try {
                     String msg = event.getMessage().getContentRaw();
                     String[] Message = msg.split("\\s+");
@@ -513,31 +512,60 @@ public class BotCommands extends ListenerAdapter {
                     RedditPost post = gson.fromJson(json,RedditPost.class);
                     int iii=0;
                     for (Child p :post.data.children) {
-                        if(iii<count) {
-                            EmbedBuilder bldr = new EmbedBuilder();
-                            bldr.setTitle(p.data.title);
-                            bldr.setImage(p.data.url);
-                            bldr.setDescription(p.data.selftext);
-                            bldr.setColor(Color.CYAN);
-                            event.getChannel().sendMessageEmbeds(bldr.build()).queue();
-                            iii++;
+                        if (p.data.over_18) {
+                            if (event.getTextChannel().isNSFW()) {
+                                if(iii<count) {
+                                    int votes = p.data.ups - p.data.downs;
+                                    if (!p.data.url.endsWith(".jpg") && !p.data.url.endsWith(".jpeg") && !p.data.url.endsWith(".JPG") && !p.data.url.endsWith(".JPEG") && !p.data.url.endsWith(".png") && !p.data.url.endsWith(".PNG") && !p.data.url.endsWith(".gif") && !p.data.url.endsWith(".GIF")) {
+                                        event.getChannel().sendMessage(p.data.author + " posted this in r/" + p.data.subreddit + " with " + votes + " upvotes\r\n\r\n" + "**" + p.data.title + "**\r\n" + p.data.selftext + "\r\n" + p.data.url).queue();
+                                        iii++;
+                                    } else {
+                                        EmbedBuilder bldr = new EmbedBuilder();
+                                        bldr.setAuthor(p.data.author + " posted this in r/" + p.data.subreddit);
+                                        bldr.setTitle(p.data.title);
+                                        bldr.setImage(p.data.url);
+                                        bldr.setDescription(p.data.selftext);
+                                        bldr.setColor(Color.MAGENTA);
+                                        bldr.setFooter("Upvotes: " + votes);
+                                        event.getChannel().sendMessageEmbeds(bldr.build()).queue();
+                                        iii++;
+                                    }
+                                } else break;
+                            } else {
+                                embed.addField("Error!", "Subreddit is 18+ and this channel is not set to NSFW!", false);
+                                channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                                    message.delete().queueAfter(10, TimeUnit.SECONDS);
+                                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                                });
+                                break;
+                            }
+                        } else {
+                            if(iii<count) {
+                                int votes = p.data.ups - p.data.downs;
+                                if (!p.data.url.endsWith(".jpg") && !p.data.url.endsWith(".jpeg") && !p.data.url.endsWith(".JPG") && !p.data.url.endsWith(".JPEG") && !p.data.url.endsWith(".png") && !p.data.url.endsWith(".PNG") && !p.data.url.endsWith(".gif") && !p.data.url.endsWith(".GIF")) {
+                                    event.getChannel().sendMessage(p.data.author + " posted this in r/" + p.data.subreddit + " with " + votes + " upvotes\r\n\r\n" + "**" + p.data.title + "**\r\n" + p.data.selftext + "\r\n" + p.data.url).queue();
+                                    iii++;
+                                } else {
+                                    EmbedBuilder bldr = new EmbedBuilder();
+                                    bldr.setAuthor(p.data.author + " posted this in r/" + p.data.subreddit);
+                                    bldr.setTitle(p.data.title);
+                                    bldr.setImage(p.data.url);
+                                    bldr.setDescription(p.data.selftext);
+                                    bldr.setColor(Color.MAGENTA);
+                                    bldr.setFooter("Upvotes: " + votes);
+                                    event.getChannel().sendMessageEmbeds(bldr.build()).queue();
+                                    iii++;
+                                }
+                            } else break;
                         }
-                        else break;
                     }
                 } catch (Exception e) {
-                    embed.addField("Error!", "Subreddit not found!", false);
+                    embed.addField("Error!", "Subreddit not found or command layout error!", false);
                     channel.sendMessageEmbeds(embed.build()).queue(message -> {
                         message.delete().queueAfter(10, TimeUnit.SECONDS);
                         event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
                     });
                 }
-            } else {
-                embed.addField("Error!", "Channel is not set to NSFW!", false);
-                channel.sendMessageEmbeds(embed.build()).queue(message -> {
-                    message.delete().queueAfter(10, TimeUnit.SECONDS);
-                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
-                });
-            }
         }
 //Moderation:
 
@@ -1200,12 +1228,13 @@ public class BotCommands extends ListenerAdapter {
             embed.setDescription("Page 1 of 3");
 
             embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
+            embed.addField(prefix + "reddit <subreddit> <top, hot, or new> <amount to show>", "Sends reddit posts.", false);
             embed.addField(prefix + "jumbo <emoji>", "Turns an emoji into an image.", false);
             embed.addField(prefix + "userinfo", "Shows users info.", false);
             embed.addField(prefix + "serverinfo", "Shows server info.", false);
             embed.addField(prefix + "ping", "Shows message response time.", false);
-            embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
-            embed.addField(prefix + "afk [<message>]", "Sets your AFK status.", false);
+            //embed.addField(prefix + "react <emoji>", "Adds reaction to replied message.", false);
+            //embed.addField(prefix + "afk [<message>]", "Sets your AFK status.", false);
             embed.addField(prefix + "uptime", "Shows bots uptime.", false);
 
             channel.sendMessageEmbeds(embed.build()).setActionRow(Button.primary("page:2", "Page 2"), Button.primary("page:3", "Page 3"), Button.danger("close", "Close")).queue();
@@ -1227,6 +1256,7 @@ private String valueOf(long time) {
             embed.setDescription("Page 1 of 3");
 
             embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
+            embed.addField(prefix + "reddit <subreddit> <top, hot, or new> <amount to show>", "Sends reddit posts.", false);
             embed.addField(prefix + "jumbo <emoji>", "Turns an emoji into an image.", false);
             embed.addField(prefix + "userinfo", "Shows users info.", false);
             embed.addField(prefix + "serverinfo", "Shows server info.", false);
