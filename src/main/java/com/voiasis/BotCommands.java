@@ -23,6 +23,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+
 import com.google.gson.Gson;
 
 import static com.voiasis.handler.CommandsList.registerCommands;
@@ -495,6 +496,14 @@ public class BotCommands extends ListenerAdapter {
                 });
             }
         }
+        //webp2png
+        if (args[0].equalsIgnoreCase(prefix + "webp2png")) {
+            try {
+                webp2png.converter(args[1], event.getChannel());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         //reddit
         if (args[0].equalsIgnoreCase(prefix + "reddit")) {
                 try {
@@ -517,7 +526,17 @@ public class BotCommands extends ListenerAdapter {
                                 if(iii<count) {
                                     int votes = p.data.ups - p.data.downs;
                                     if (!p.data.url.endsWith(".jpg") && !p.data.url.endsWith(".jpeg") && !p.data.url.endsWith(".JPG") && !p.data.url.endsWith(".JPEG") && !p.data.url.endsWith(".png") && !p.data.url.endsWith(".PNG") && !p.data.url.endsWith(".gif") && !p.data.url.endsWith(".GIF")) {
-                                        event.getChannel().sendMessage(p.data.author + " posted this in r/" + p.data.subreddit + " with " + votes + " upvotes\r\n\r\n" + "**" + p.data.title + "**\r\n" + p.data.selftext + "\r\n" + p.data.url).queue();
+                                        //event.getChannel().sendMessage(p.data.author + " posted this in r/" + p.data.subreddit + " with " + votes + " upvotes\r\n\r\n" + "**" + p.data.title + "**\r\n" + p.data.selftext + "\r\n" + p.data.url).queue();
+                                        //iii++;
+
+                                        EmbedBuilder bldr = new EmbedBuilder();
+                                        bldr.setAuthor(p.data.author + " posted this in r/" + p.data.subreddit);
+                                        bldr.setTitle(p.data.title);
+                                        bldr.setDescription(p.data.selftext);
+                                        bldr.addField("", "[View post](https://www.reddit.com" + p.data.permalink + ")", false);
+                                        bldr.setColor(Color.MAGENTA);
+                                        bldr.setFooter("Upvotes: " + votes);
+                                        event.getChannel().sendMessageEmbeds(bldr.build()).queue();
                                         iii++;
                                     } else {
                                         EmbedBuilder bldr = new EmbedBuilder();
@@ -525,6 +544,7 @@ public class BotCommands extends ListenerAdapter {
                                         bldr.setTitle(p.data.title);
                                         bldr.setImage(p.data.url);
                                         bldr.setDescription(p.data.selftext);
+                                        bldr.addField("", "[View post](https://www.reddit.com" + p.data.permalink + ")", false);
                                         bldr.setColor(Color.MAGENTA);
                                         bldr.setFooter("Upvotes: " + votes);
                                         event.getChannel().sendMessageEmbeds(bldr.build()).queue();
@@ -543,7 +563,17 @@ public class BotCommands extends ListenerAdapter {
                             if(iii<count) {
                                 int votes = p.data.ups - p.data.downs;
                                 if (!p.data.url.endsWith(".jpg") && !p.data.url.endsWith(".jpeg") && !p.data.url.endsWith(".JPG") && !p.data.url.endsWith(".JPEG") && !p.data.url.endsWith(".png") && !p.data.url.endsWith(".PNG") && !p.data.url.endsWith(".gif") && !p.data.url.endsWith(".GIF")) {
-                                    event.getChannel().sendMessage(p.data.author + " posted this in r/" + p.data.subreddit + " with " + votes + " upvotes\r\n\r\n" + "**" + p.data.title + "**\r\n" + p.data.selftext + "\r\n" + p.data.url).queue();
+                                    //event.getChannel().sendMessage(p.data.author + " posted this in r/" + p.data.subreddit + " with " + votes + " upvotes\r\n\r\n" + "**" + p.data.title + "**\r\n" + p.data.selftext + "\r\n" + p.data.url).queue();
+                                    //iii++;
+
+                                    EmbedBuilder bldr = new EmbedBuilder();
+                                    bldr.setAuthor(p.data.author + " posted this in r/" + p.data.subreddit);
+                                    bldr.setTitle(p.data.title);
+                                    bldr.setDescription(p.data.selftext);
+                                    bldr.addField("", "[View post](https://www.reddit.com" + p.data.permalink + ")", false);
+                                    bldr.setColor(Color.MAGENTA);
+                                    bldr.setFooter("Upvotes: " + votes);
+                                    event.getChannel().sendMessageEmbeds(bldr.build()).queue();
                                     iii++;
                                 } else {
                                     EmbedBuilder bldr = new EmbedBuilder();
@@ -551,6 +581,7 @@ public class BotCommands extends ListenerAdapter {
                                     bldr.setTitle(p.data.title);
                                     bldr.setImage(p.data.url);
                                     bldr.setDescription(p.data.selftext);
+                                    bldr.addField("", "[View post](https://www.reddit.com" + p.data.permalink + ")", false);
                                     bldr.setColor(Color.MAGENTA);
                                     bldr.setFooter("Upvotes: " + votes);
                                     event.getChannel().sendMessageEmbeds(bldr.build()).queue();
@@ -1230,6 +1261,7 @@ public class BotCommands extends ListenerAdapter {
             embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
             embed.addField(prefix + "reddit <subreddit> <top, hot, or new> <amount to show>", "Sends reddit posts.", false);
             embed.addField(prefix + "jumbo <emoji>", "Turns an emoji into an image.", false);
+            embed.addField(prefix + "webp2png <imagelink.webp>", "Converts a webp to a png.", false);
             embed.addField(prefix + "userinfo", "Shows users info.", false);
             embed.addField(prefix + "serverinfo", "Shows server info.", false);
             embed.addField(prefix + "ping", "Shows message response time.", false);
@@ -1258,6 +1290,7 @@ private String valueOf(long time) {
             embed.addField(prefix + "avatar [<@user>]", "Shows avatar of user.", false);
             embed.addField(prefix + "reddit <subreddit> <top, hot, or new> <amount to show>", "Sends reddit posts.", false);
             embed.addField(prefix + "jumbo <emoji>", "Turns an emoji into an image.", false);
+            embed.addField(prefix + "webp2png <imagelink.webp>", "Converts a webp to a png.", false);
             embed.addField(prefix + "userinfo", "Shows users info.", false);
             embed.addField(prefix + "serverinfo", "Shows server info.", false);
             embed.addField(prefix + "ping", "Shows message response time.", false);
