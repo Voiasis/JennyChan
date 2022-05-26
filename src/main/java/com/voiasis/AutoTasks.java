@@ -132,13 +132,58 @@ public class AutoTasks extends ListenerAdapter {
                 message.delete().queueAfter(10, TimeUnit.SECONDS);
             });
         }
+        if (msgc.contains("discord.gg/")) { //invite blocker
+            if (!event.getChannel().getId().equals("971590673696432149") && event.getGuild().getId().equals("965338284987408394")) {
+                event.getMessage().delete().queue();
+                event.getTextChannel().sendMessage(event.getAuthor().getAsMention() + ", please keep advertisments inside" + event.getGuild().getTextChannelById("971590673696432149").getAsMention()).queue();
+            }
+        }
+        //Dad joke
+        if (!event.getAuthor().isBot()) {
+            if (msg.contains(" i'm ")) {
+                int stuff = msgl.indexOf("i'm");
+                String thing = msgl.substring(stuff + 3);
+                dadjoke(event.getMessage(), thing);
+            }
+            if (msg.contains(" im ")) {
+                int stuff = msgl.indexOf("im");
+                String thing = msgl.substring(stuff + 2);
+                dadjoke(event.getMessage(), thing);
+            }
+            if (msg.contains(" i am ")) {
+                int stuff = msgl.indexOf("i am");
+                String thing = msgl.substring(stuff + 4);
+                dadjoke(event.getMessage(), thing);
+            }
+            if (msg.contains(" ima ")) {
+                int stuff = msgl.indexOf("im");
+                String thing = msgl.substring(stuff + 2);
+                dadjoke(event.getMessage(), thing);
+            }
+            if (msg.contains(" imma ")) {
+                int stuff = msgl.indexOf("im");
+                String thing = msgl.substring(stuff + 2);
+                dadjoke(event.getMessage(), thing);
+            }
+            if (msg.contains(" i'mma ")) {
+                int stuff = msgl.indexOf("i'm");
+                String thing = msgl.substring(stuff + 3);
+                dadjoke(event.getMessage(), thing);
+            }
+        }
         //custom chat filters
         if (msg.contains(" ur ")) {
             if (event.getAuthor().getId().equals("472899069136601099")) {
                 //
             } else {
                 event.getMessage().delete().queue();
-                event.getChannel().sendMessage(event.getAuthor().getAsMention() + " L").queueAfter(1, TimeUnit.SECONDS);
+            }
+        }
+        if (msg.contains(" u r ")) {
+            if (event.getAuthor().getId().equals("472899069136601099")) {
+                //
+            } else {
+                event.getMessage().delete().queue();
             }
         }
         if (msg.contains(" urs ")) {
@@ -146,7 +191,6 @@ public class AutoTasks extends ListenerAdapter {
                 //
             } else {
                 event.getMessage().delete().queue();
-                event.getChannel().sendMessage(event.getAuthor().getAsMention() + " L").queueAfter(1, TimeUnit.SECONDS);
             }
         }
         if (msg.contains(" nft ")) {
@@ -156,16 +200,22 @@ public class AutoTasks extends ListenerAdapter {
                 event.getMessage().delete().queue();
             }
         }
+        if (msgl.contains("fag")) {
+            event.getMessage().delete().queue();
+        }
+        if (msgl.contains("kys")) {
+            event.getMessage().delete().queue();
+        }
         if (msgl.contains("nigg")) {
             event.getMessage().delete().queue();
-            event.getMessage().getMember().timeoutFor(6942, TimeUnit.MINUTES).queue();
-            event.getChannel().sendMessage(event.getAuthor().getAsMention() + " has been timed out for saying the nword.").queue();
         }
         if (msgl.contains("retard")) {
             event.getMessage().delete().queue();
         }
     }
-    private void coolDownUser(TextChannel textChannel, User author) {
+    private void dadjoke(Message message, String thing) {
+        String reply = thing.replaceFirst(" ", "");
+        message.reply("Hi \"" + reply + "\", I am JennyChan.").queue();
     }
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {

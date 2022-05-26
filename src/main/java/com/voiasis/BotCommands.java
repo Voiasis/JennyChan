@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.awt.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,7 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-
+import com.github.kskelm.baringo.util.BaringoApiException;
 import com.google.gson.Gson;
 
 import static com.voiasis.handler.CommandsList.registerCommands;
@@ -496,31 +497,175 @@ public class BotCommands extends ListenerAdapter {
                 });
             }
         }
+        //imgur
+        //if (args[0].equalsIgnoreCase(prefix + "imgur")) {
+            //try {
+                //event.getMessage().reply(ImgurGrabber.grab(args[1])).queue();
+                
+            //} catch (BaringoApiException | IOException e) {
+                //e.printStackTrace();
+            //}
+        //}
         //webp2png
         if (args[0].equalsIgnoreCase(prefix + "webp2png")) {
-            try {
-                webp2png.converter(args[1], event.getChannel());
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (event.getMessage().getContentRaw().toCharArray().length == 9) {
+                if (event.getMessage().getAttachments().isEmpty()) {
+                    embed.addField(prefix + "webp2png <imagelink.webp>", "Converts a webp to a png.", false);
+                    channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                        message.delete().queueAfter(10, TimeUnit.SECONDS);
+                        event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                    });
+                } else {
+                    if (event.getMessage().getAttachments().get(0).getFileExtension().equals("webp")) {
+                        event.getChannel().sendTyping().queue();
+                        try {
+                            webp2png.converter(event.getMessage().getAttachments().get(0).getUrl());
+                            try {
+                                TimeUnit.SECONDS.sleep(3);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            File file = new File("E:/Dev/JennyChan/settings/cache/converted_image.png");
+                            event.getMessage().reply(file).queue();
+                        } catch (IOException e) {
+                            embed.addField("Error!", "Image too large!", false);
+                            channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                                message.delete().queueAfter(10, TimeUnit.SECONDS);
+                                event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                            });
+                        }
+                    } else {
+                        embed.addField("Error!", "Invalid webp image!", false);
+                            channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                            message.delete().queueAfter(10, TimeUnit.SECONDS);
+                            event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                        });
+                    }  
+                }
+            } else {
+                if (args[1].contains("webp")) {
+                    event.getChannel().sendTyping().queue();
+                    try {
+                        webp2png.converter(args[1]);
+                        TimeUnit.SECONDS.sleep(3);
+                        File file = new File("E:/Dev/JennyChan/settings/cache/converted_image.png");
+                        event.getMessage().reply(file).queue();
+                    } catch (IOException | InterruptedException e) {
+                        embed.addField("Error!", "Invalid webp image URL!", false);
+                        channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                            message.delete().queueAfter(10, TimeUnit.SECONDS);
+                            event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                        }); 
+                    }
+                } else {
+                    embed.addField("Error!", "Invalid webp image!", false);
+                        channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                        message.delete().queueAfter(10, TimeUnit.SECONDS);
+                        event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                    });
+                }
             }
         }
         //reddit
         if (args[0].equalsIgnoreCase(prefix + "reddit")) {
+            try {
+                String msg = event.getMessage().getContentRaw();
+                String[] Message = msg.split("\\s+");
+                String subReddit = Message[1];
+                String type = Message[2];
+                int count = Integer.parseInt(Message[3]);
+                String json = null;
                 try {
-                    String msg = event.getMessage().getContentRaw();
-                    String[] Message = msg.split("\\s+");
-                    String subReddit = Message[1];
-                    String type = Message[2];
-                    int count = Integer.parseInt(Message[3]);
-                    String json = null;
-                    try {
-                        json = getJSON("https://www.reddit.com/r/"+subReddit+"/"+type+".json?count="+count);
-                    } catch (IOException e) {
-                    }
-                    Gson gson = new Gson();
-                    RedditPost post = gson.fromJson(json,RedditPost.class);
-                    int iii=0;
-                    for (Child p :post.data.children) {
+                    json = getJSON("https://www.reddit.com/r/"+subReddit+"/"+type+".json?count="+count);
+                } catch (IOException e) {
+                }
+                Gson gson = new Gson();
+                RedditPost post = gson.fromJson(json,RedditPost.class);
+                int iii=0;
+                for (Child p :post.data.children) {
+                    if (p.data.title.length() >= 256) {
+                        if (p.data.title.length() >= 1024) {
+                            if(iii<count) {
+                                iii++; //TODO
+                            }
+                        } else {
+                            if (p.data.over_18) {
+                                if (event.getTextChannel().isNSFW()) {
+                                    if(iii<count) {
+                                        int votes = p.data.ups - p.data.downs;
+                                        if (!p.data.url.endsWith(".jpg") && !p.data.url.endsWith(".jpeg") && !p.data.url.endsWith(".JPG") && !p.data.url.endsWith(".JPEG") && !p.data.url.endsWith(".png") && !p.data.url.endsWith(".PNG") && !p.data.url.endsWith(".gif") && !p.data.url.endsWith(".GIF")) {
+                                            //event.getChannel().sendMessage(p.data.author + " posted this in r/" + p.data.subreddit + " with " + votes + " upvotes\r\n\r\n" + "**" + p.data.title + "**\r\n" + p.data.selftext + "\r\n" + p.data.url).queue();
+                                            //iii++;
+        
+                                            EmbedBuilder bldr = new EmbedBuilder();
+                                            bldr.setAuthor(p.data.author + " posted this in r/" + p.data.subreddit);
+                                            //bldr.setTitle(" ");
+                                            bldr.setDescription("**" + p.data.title + "**");
+                                            bldr.addField("", p.data.selftext, false);
+                                            bldr.addField("", "[View post](https://www.reddit.com" + p.data.permalink + ")", false);
+                                            bldr.setColor(Color.MAGENTA);
+                                            bldr.setFooter("Upvotes: " + votes);
+                                            event.getChannel().sendMessageEmbeds(bldr.build()).queue();
+                                            iii++;
+                                        } else {
+                                            EmbedBuilder bldr = new EmbedBuilder();
+                                            bldr.setAuthor(p.data.author + " posted this in r/" + p.data.subreddit);
+                                            //bldr.setTitle(" ");
+                                            bldr.setDescription("**" + p.data.title + "**");
+                                            bldr.addField("", p.data.selftext, false);
+                                            bldr.setImage(p.data.url);
+                                            bldr.addField("", "[View post](https://www.reddit.com" + p.data.permalink + ")", false);
+                                            bldr.setColor(Color.MAGENTA);
+                                            bldr.setFooter("Upvotes: " + votes);
+                                            event.getChannel().sendMessageEmbeds(bldr.build()).queue();
+                                            iii++;
+                                        }
+                                    } else break;
+                                } else {
+                                    embed.addField("Error!", "Subreddit is 18+ and this channel is not set to NSFW!", false);
+                                    channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                                        message.delete().queueAfter(10, TimeUnit.SECONDS);
+                                        event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                                    });
+                                    break;
+                                }
+                            } else {
+                                if(iii<count) {
+                                    int votes = p.data.ups - p.data.downs;
+                                    if (!p.data.url.endsWith(".jpg") && !p.data.url.endsWith(".jpeg") && !p.data.url.endsWith(".JPG") && !p.data.url.endsWith(".JPEG") && !p.data.url.endsWith(".png") && !p.data.url.endsWith(".PNG") && !p.data.url.endsWith(".gif") && !p.data.url.endsWith(".GIF")) {
+                                        //event.getChannel().sendMessage(p.data.author + " posted this in r/" + p.data.subreddit + " with " + votes + " upvotes\r\n\r\n" + "**" + p.data.title + "**\r\n" + p.data.selftext + "\r\n" + p.data.url).queue();
+                                        //iii++;
+        
+                                        EmbedBuilder bldr = new EmbedBuilder();
+                                        bldr.setAuthor(p.data.author + " posted this in r/" + p.data.subreddit);
+                                        bldr.setTitle(p.data.title);
+                                        bldr.setDescription(p.data.selftext);
+                                        bldr.addField("", "[View post](https://www.reddit.com" + p.data.permalink + ")", false);
+                                        bldr.setColor(Color.MAGENTA);
+                                        bldr.setFooter("Upvotes: " + votes);
+                                        event.getChannel().sendMessageEmbeds(bldr.build()).queue();
+                                        iii++;
+                                    } else {
+                                        EmbedBuilder bldr = new EmbedBuilder();
+                                        bldr.setAuthor(p.data.author + " posted this in r/" + p.data.subreddit);
+                                        bldr.setTitle(p.data.title);
+                                        bldr.setImage(p.data.url);
+                                        bldr.setDescription(p.data.selftext);
+                                        bldr.addField("", "[View post](https://www.reddit.com" + p.data.permalink + ")", false);
+                                        bldr.setColor(Color.MAGENTA);
+                                        bldr.setFooter("Upvotes: " + votes);
+                                        event.getChannel().sendMessageEmbeds(bldr.build()).queue();
+                                        iii++;
+                                    }
+                                } else break;
+                            }
+                        }
+
+                    } else if (p.data.selftext.length() >= 1024) {
+                        if(iii<count) {
+                            iii++; //TODO
+                        }
+                    } else {
                         if (p.data.over_18) {
                             if (event.getTextChannel().isNSFW()) {
                                 if(iii<count) {
@@ -528,7 +673,7 @@ public class BotCommands extends ListenerAdapter {
                                     if (!p.data.url.endsWith(".jpg") && !p.data.url.endsWith(".jpeg") && !p.data.url.endsWith(".JPG") && !p.data.url.endsWith(".JPEG") && !p.data.url.endsWith(".png") && !p.data.url.endsWith(".PNG") && !p.data.url.endsWith(".gif") && !p.data.url.endsWith(".GIF")) {
                                         //event.getChannel().sendMessage(p.data.author + " posted this in r/" + p.data.subreddit + " with " + votes + " upvotes\r\n\r\n" + "**" + p.data.title + "**\r\n" + p.data.selftext + "\r\n" + p.data.url).queue();
                                         //iii++;
-
+    
                                         EmbedBuilder bldr = new EmbedBuilder();
                                         bldr.setAuthor(p.data.author + " posted this in r/" + p.data.subreddit);
                                         bldr.setTitle(p.data.title);
@@ -565,7 +710,7 @@ public class BotCommands extends ListenerAdapter {
                                 if (!p.data.url.endsWith(".jpg") && !p.data.url.endsWith(".jpeg") && !p.data.url.endsWith(".JPG") && !p.data.url.endsWith(".JPEG") && !p.data.url.endsWith(".png") && !p.data.url.endsWith(".PNG") && !p.data.url.endsWith(".gif") && !p.data.url.endsWith(".GIF")) {
                                     //event.getChannel().sendMessage(p.data.author + " posted this in r/" + p.data.subreddit + " with " + votes + " upvotes\r\n\r\n" + "**" + p.data.title + "**\r\n" + p.data.selftext + "\r\n" + p.data.url).queue();
                                     //iii++;
-
+    
                                     EmbedBuilder bldr = new EmbedBuilder();
                                     bldr.setAuthor(p.data.author + " posted this in r/" + p.data.subreddit);
                                     bldr.setTitle(p.data.title);
@@ -590,14 +735,15 @@ public class BotCommands extends ListenerAdapter {
                             } else break;
                         }
                     }
-                } catch (Exception e) {
-                    embed.addField("Error!", "Subreddit not found or command layout error!", false);
-                    channel.sendMessageEmbeds(embed.build()).queue(message -> {
-                        message.delete().queueAfter(10, TimeUnit.SECONDS);
-                        event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
-                    });
                 }
-        }
+            } catch (Exception e) {
+                embed.addField("Error!", "Subreddit not found or command layout error!", false);
+                channel.sendMessageEmbeds(embed.build()).queue(message -> {
+                    message.delete().queueAfter(10, TimeUnit.SECONDS);
+                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                });
+            }
+    }
 //Moderation:
 
         //purge
